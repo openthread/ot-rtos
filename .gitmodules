@@ -1,0 +1,18 @@
+[submodule "third_party/openthread"]
+	path = third_party/openthread/repo
+	url = https://github.com/openthread/openthread.git
+[submodule "third_party/lwip"]
+	path = third_party/lwip/repo
+	url = https://git.savannah.nongnu.org/git/lwip.git
+[submodule "third_party/libjwt"]
+	path = third_party/libjwt/repo
+	url = https://github.com/benmcollins/libjwt.git
+[submodule "third_party/jansson"]
+	path = third_party/jansson/repo
+	url = https://github.com/akheron/jansson.git
+[submodule "third_party/mbedtls/repo"]
+	path = third_party/mbedtls/repo
+	url = https://github.com/ARMmbed/mbedtls.git
+[submodule "third_party/freertos-addons/repo"]
+	path = third_party/freertos-addons/repo
+	url = https://github.com/michaelbecker/freertos-addons.git
