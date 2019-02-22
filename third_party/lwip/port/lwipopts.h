@@ -62,7 +62,7 @@
    ---------- Memory options ----------
    ------------------------------------
 */
-#define MEM_LIBC_MALLOC  1
+#define MEM_LIBC_MALLOC 1
 /**
  * MEM_ALIGNMENT: should be set to the alignment of the CPU
  *    4 byte alignment -> #define MEM_ALIGNMENT 4
@@ -440,23 +440,22 @@
  */
 #define NETIF_MAX_HWADDR_LEN 8
 
+#define LWIP_TCPIP_CORE_LOCKING 1
 
-#define LWIP_TCPIP_CORE_LOCKING         1
+#define LWIP_ALTCP 1
+#define LWIP_ALTCP_TLS 1
+#define LWIP_ALTCP_TLS_MBEDTLS 1
 
-#define LWIP_ALTCP                      1
-#define LWIP_ALTCP_TLS                  1
-#define LWIP_ALTCP_TLS_MBEDTLS          1
-
-#define MQTT_OUTPUT_RINGBUF_SIZE        1024
+#define MQTT_OUTPUT_RINGBUF_SIZE 1024
 
 #define TCP_WND (16384)
 
 #define LWIP_DEBUG 1
 
 #ifdef PLATFORM_linux
-#define LWIP_PROVIDE_ERRNO              0
-#define LWIP_ERRNO_STDINCLUDE           1
-#define IPV6_FRAG_COPYHEADER            1
+#define LWIP_PROVIDE_ERRNO 0
+#define LWIP_ERRNO_STDINCLUDE 1
+#define IPV6_FRAG_COPYHEADER 1
 #endif
 
 #endif /* __LWIPOPTS_H__ */
