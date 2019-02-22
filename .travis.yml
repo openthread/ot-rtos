@@ -1,0 +1,25 @@
+language: cpp
+
+sudo: required
+dist: xenial
+
+cache:
+  directories:
+  - $HOME/.cache/tools
+
+script: .travis/script.sh
+
+matrix:
+  include:
+    - env: BUILD_TARGET="pretty-check"
+      os: linux
+      addons:
+        apt:
+          sources:
+            - llvm-toolchain-trusty-5.0
+          packages:
+            - clang-5.0
+    - env: BUILD_TARGET="nrf-check"
+      os: linux
+    - env: BUILD_TARGET="linux-check"
+      os: linux
