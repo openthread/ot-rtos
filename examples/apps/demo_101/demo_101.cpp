@@ -62,10 +62,14 @@ static TaskHandle_t sDemoTask;
 
 static void HandleJoinerCallback(otError aError, void *aContext)
 {
-    printf("Joiner callback with error\n", aError);
     if (aError == OT_ERROR_NONE)
     {
+        printf("Join success\n");
         xTaskNotify(sDemoTask, COMMISSION_BIT, eSetBits);
+    }
+    else
+    {
+        printf("Join failed %s\n", otThreadErrorToString(aError));
     }
 }
 
@@ -132,6 +136,7 @@ void demo101Task(void *p)
     httpSettings.headers_done_fn = HttpHeaderCallback;
     httpSettings.altcp_allocator = &allocator;
 
+    printf("Start join\n");
     // ifconfig up
     OT_API_CALL(otIp6SetEnabled(otrGetInstance(), true));
     // joiner start
@@ -141,11 +146,13 @@ void demo101Task(void *p)
     WaitForSignal(COMMISSION_BIT);
 
     // thread start
+    printf("Enable thread\n");
     OT_API_CALL(otThreadSetEnabled(otrGetInstance(), true));
     // wait a while for thread to connect
     vTaskDelay(2000);
 
     // dns64 www.google.com
+    printf("Start curl www.google.com\n");
     dnsNat64Address("www.google.com", &serverAddr.u_addr.ip6);
     serverAddr.type = IPADDR_TYPE_V6;
 
