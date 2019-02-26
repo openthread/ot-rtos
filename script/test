@@ -46,19 +46,19 @@ do_clean() {
 }
 
 do_build() {
-    do_clean
-    mkdir "${BUILD_DIR}"
-    (cd "${BUILD_DIR}" && cmake .. $@ && make -j${BUILD_JOBS})
+    [[ -d "${BUILD_DIR}" ]] || mkdir "${BUILD_DIR}"
+    (cd "${BUILD_DIR}" && cmake .. "$@" && make -j${BUILD_JOBS})
 }
 
 check_pretty() {
-    find src include third_party/*/port \( -name '*.c' -o -name '*.cpp' -o -name '*.h' -o -name '*.hpp' \) |\
+    find src include third_party/freertos-addons/port third_party/lwip/port \
+        \( -name '*.c' -o -name '*.cpp' -o -name '*.h' -o -name '*.hpp' \) |\
         xargs -L 1 third_party/openthread/repo/script/clang-format-check.sh
 }
 
 print_usage() {
     cat <<EOF
-USAGE: $0 COMMAND
+USAGE: "$0" COMMAND
 
 COMMAND:
     build       Build project for running tests. This can be used to rebuild the project for changes.
@@ -67,9 +67,9 @@ COMMAND:
     help        Print this help.
 
 EXAMPLES:
-    $0 clean build
+    "$0" clean build
 EOF
-    exit $1
+    exit "$1"
 }
 
 main()
@@ -79,10 +79,12 @@ main()
             clean)
                 do_clean
                 ;;
-            linux_build)
+            build_linux)
+                do_clean
                 do_build -DPLATFORM_NAME=linux
                 ;;
-            nrf_build)
+            build_nrf52840)
+                do_clean
                 do_build -DCMAKE_TOOLCHAIN_FILE=../cmake/arm-none-eabi.cmake -DPLATFORM_NAME=nrf52
                 ;;
             pretty)

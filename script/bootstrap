@@ -27,25 +27,12 @@
 #  POSSIBILITY OF SUCH DAMAGE.
 #
 
-set -e
-set -x
-
-case $BUILD_TARGET in
-pretty-check)
-    export PATH=$TOOLS_HOME/usr/bin:$PATH
-    ./script/test pretty 
-    ;;
-
-linux-check)
-    ./script/test build_linux
-    ;;
-
-nrf-check)
-    ./script/bootstrap
-    ./script/test build_nrf52840
-    ;;
-
-*)
+die()
+{
+    echo " *** ERROR: " $*
     exit 1
-    ;;
-esac
+}
+
+sudo add-apt-repository -y ppa:team-gcc-arm-embedded/ppa || die
+sudo apt-get update || die
+sudo apt-get -y install gcc-arm-embedded || die

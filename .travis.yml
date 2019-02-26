@@ -3,10 +3,6 @@ language: cpp
 sudo: required
 dist: xenial
 
-cache:
-  directories:
-  - $HOME/.cache/tools
-
 script: .travis/script.sh
 
 matrix:
@@ -16,9 +12,9 @@ matrix:
       addons:
         apt:
           sources:
-            - llvm-toolchain-xenial
+            - llvm-toolchain-xenial-6.0
           packages:
-            - clang-5.0
+            - clang-format-6.0
     - env: BUILD_TARGET="nrf-check"
       os: linux
     - env: BUILD_TARGET="linux-check"
