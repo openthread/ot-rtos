@@ -50,7 +50,7 @@ void httpTask(void *p)
     memset(&daddr, 0, sizeof(daddr));
     daddr.sin6_family = AF_INET6;
     daddr.sin6_port   = htons(25680);
-    inet_pton(AF_INET6, "64:ff9b::6a0f:e7d3", &daddr.sin6_addr);
+    inet_pton(AF_INET6, "64:ff9b::808:808", &daddr.sin6_addr);
     memset(&messageInfo, 0, sizeof(messageInfo));
     memcpy(&messageInfo.mPeerAddr, &daddr.sin6_addr, sizeof(messageInfo.mPeerAddr));
 
