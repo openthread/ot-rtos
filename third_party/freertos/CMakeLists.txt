@@ -54,6 +54,7 @@ target_compile_options(freertos
        -Wall
        -Wextra
        -Wshadow
+       -Wno-type-limits
        -Werror)
 
 add_library(freertos_port_hdrs INTERFACE)

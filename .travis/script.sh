@@ -48,8 +48,10 @@ linux-check)
     ;;
 
 nrf-check)
-    sudo apt update
-    sudo apt install gcc-arm-none-eabi
+    sudo apt-get install lib32z1 || die
+    wget https://developer.arm.com/-/media/Files/downloads/gnu-rm/8-2018q4/gcc-arm-none-eabi-8-2018-q4-major-linux.tar.bz2 || die
+    tar xjf gcc-arm-none-eabi-8-2018-q4-major-linux.tar.bz2 -C /tmp || die
+    export PATH=/tmp/gcc-arm-none-eabi-8-2018-q4-major/bin:$PATH || die
     ./script/test nrf_build 
     ;;
 
