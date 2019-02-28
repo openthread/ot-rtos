@@ -46,6 +46,14 @@
 #define MBEDTLS_PK_WRITE_C
 #endif
 
+#undef MBEDTLS_MPI_MAX_SIZE
+#define MBEDTLS_MPI_MAX_SIZE 256
+
+#undef MBEDTLS_SSL_MAX_CONTENT_LEN
+#define MBEDTLS_SSL_MAX_CONTENT_LEN 2800
+
+#define MBEDTLS_DEBUG_C
+
 #include "mbedtls/check_config.h"
 
 #endif /* MBEDTLS_CONFIG_H */

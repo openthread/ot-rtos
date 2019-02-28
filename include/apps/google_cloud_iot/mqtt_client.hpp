@@ -54,24 +54,42 @@ struct GoogleCloudIotClientCfg
 class GoogleCloudIotMqttClient
 {
 public:
+    typedef void (*MqttTopicDataCallback)(const char *aTopic, const char *aMsg, uint16_t aMsgLength);
+
     GoogleCloudIotMqttClient(const GoogleCloudIotClientCfg &aConfig);
 
-    int Connect();
+    int Connect(void);
 
-    int Publish(const char *aTopi, const uint8_t *aMsg, size_t aMsgLength);
+    int Publish(const char *aTopic, const char *aMsg, size_t aMsgLength);
 
-    ~GoogleCloudIotMqttClient();
+    int Subscribe(const char *aTopic, MqttTopicDataCallback aCb);
+
+    ~GoogleCloudIotMqttClient(void);
 
 private:
-    static void mqttPubChanged(void *aArg, err_t aResult);
+    static void sMqttPubSubChanged(void *aArg, err_t aResult);
 
-    static void mqttConnectChanged(mqtt_client_t *aClient, void *aArg, mqtt_connection_status_t aStatus);
+    static void sMqttConnectChanged(mqtt_client_t *aClient, void *aArg, mqtt_connection_status_t aStatus);
+
+    static void sMqttDataCallback(void *aArg, const uint8_t *aData, uint16_t aLength, uint8_t aFlags);
+    void        mqttDataCallback(const uint8_t *aData, uint16_t aLength, uint8_t aFlags);
+
+    static void sMqttPublishCallback(void *aArg, const char *aTopic, uint32_t aTotalLength);
+    void        mqttPublishCallback(const char *aTopic, uint32_t aTotalLength);
 
     GoogleCloudIotClientCfg mConfig;
 
     struct mqtt_connect_client_info_t mClientInfo;
     mqtt_client_t *                   mMqttClient;
     mqtt_connection_status_t          mConnectResult;
+    int                               mPubSubResult;
+
+    MqttTopicDataCallback mSubCb;
+
+    // Currently we only support short message with small buffers
+    char     mSubTopicNameBuf[50];
+    char     mSubDataBuf[201];
+    uint16_t mDataOffset;
 };
 
 } // namespace app
