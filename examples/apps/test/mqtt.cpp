@@ -305,33 +305,18 @@ void configCallback(const char *aTopic, const char *aMsg, uint16_t aMsgLength)
 
 void mqttTask(void *p)
 {
-    (void)p;
+    ot::app::GoogleCloudIotClientCfg *cfg  = static_cast<ot::app::GoogleCloudIotClientCfg *>(p);
+    char                              subTopic[50];
+    int                               temperature = 0;
 
-    static uint8_t message[8] = "Hello";
-    char           subTopic[50];
-    int            temperature = 0;
-
-    ot::app::GoogleCloudIotClientCfg cfg;
-
-    printf("Mqtt task\r\n");
-
-    cfg.mAddress         = CLOUDIOT_SERVER_ADDRESS;
-    cfg.mClientId        = CLOUDIOT_CLIENT_ID;
-    cfg.mDeviceId        = CLOUDIOT_DEVICE_ID;
-    cfg.mRegistryId      = CLOUDIOT_REGISTRY_ID;
-    cfg.mProjectId       = CLOUDIOT_PROJECT_ID;
-    cfg.mRegion          = CLOUDIOT_REGION;
-    cfg.mRootCertificate = CLOUDIOT_CERT;
-    cfg.mPrivKey         = CLOUDIOT_PRIV_KEY;
-    cfg.mAlgorithm       = JWT_ALG_RS256;
-
-    ot::app::GoogleCloudIotMqttClient client(cfg);
+    ot::app::GoogleCloudIotMqttClient client(*cfg);
 
     client.Connect();
 
     printf("Connect done\r\n");
 
-    snprintf(subTopic, sizeof(subTopic), "/devices/%s/config", cfg.mDeviceId);
+    snprintf(subTopic, sizeof(subTopic), "/devices/%s/config", cfg->mDeviceId);
+    printf("Subscribe to %s\n", subTopic);
     client.Subscribe(subTopic, configCallback);
 
     while (true)
@@ -341,13 +326,14 @@ void mqttTask(void *p)
 
         temperature++;
         temperature %= 20;
-        snprintf(pubTopic, sizeof(pubTopic), "/devices/%s/events", cfg.mDeviceId);
+        snprintf(pubTopic, sizeof(pubTopic), "/devices/%s/events", cfg->mDeviceId);
         snprintf(msg, sizeof(msg), "{\"temperature\": %d}", temperature - 5);
         client.Publish(pubTopic, msg, strlen(msg));
-        printf("tick\r\n");
+        printf("Publish message: %s\r\n", msg);
         vTaskDelay(2000);
     }
 
+exit:
     gTestTask = NULL;
     vTaskDelete(NULL);
 }

@@ -35,7 +35,17 @@
 #include <openthread/error.h>
 #include <openthread/openthread-freertos.h>
 
-TaskHandle_t gTestTask = NULL;
+#include "apps/google_cloud_iot/client_cfg.h"
+#include "apps/google_cloud_iot/mqtt_client.hpp"
+
+TaskHandle_t                     gTestTask = NULL;
+ot::app::GoogleCloudIotClientCfg sCloudIotCfg;
+static char                      sDevice[20];
+static char                      sRegistry[20];
+static char                      sProject[20];
+static char                      sRegion[20];
+static char                      sClientId[200];
+static char                      sPrivKey[2000];
 
 static otError parseLong(char *argv, long *aValue)
 {
@@ -61,7 +71,51 @@ static void ProcessTest(int argc, char *argv[])
     }
     else if (!strcmp(argv[0], "mqtt"))
     {
-        xTaskCreate(mqttTask, "mqtt", 3000, NULL, 2, &gTestTask);
+        sCloudIotCfg.mAddress         = CLOUDIOT_SERVER_ADDRESS;
+        sCloudIotCfg.mRootCertificate = CLOUDIOT_CERT;
+        sCloudIotCfg.mAlgorithm       = JWT_ALG_RS256;
+        // mqtt device registry project region priv_key
+        if (argc == 6)
+        {
+            strncpy(sDevice, argv[1], sizeof(sDevice));
+            strncpy(sRegistry, argv[2], sizeof(sDevice));
+            strncpy(sProject, argv[3], sizeof(sProject));
+            strncpy(sRegion, argv[4], sizeof(sRegion));
+            snprintf(sClientId, sizeof(sClientId), "projects/%s/locations/%s/registries/%s/devices/%s", sProject,
+                     sRegion, sRegistry, sDevice);
+            {
+                FILE *fp = fopen(argv[5], "r");
+
+                if (fp)
+                {
+                    size_t n = fread(sPrivKey, 1, sizeof(sPrivKey), fp);
+                    fclose(fp);
+                }
+                else
+                {
+                    perror("fopen");
+                }
+            }
+
+            sCloudIotCfg.mClientId   = sClientId;
+            sCloudIotCfg.mDeviceId   = sDevice;
+            sCloudIotCfg.mRegistryId = sRegistry;
+            sCloudIotCfg.mProjectId  = sProject;
+            sCloudIotCfg.mRegion     = sRegion;
+            sCloudIotCfg.mPrivKey    = sPrivKey;
+        }
+        else
+        {
+            printf("using default arguments\n");
+            sCloudIotCfg.mClientId   = CLOUDIOT_CLIENT_ID;
+            sCloudIotCfg.mDeviceId   = CLOUDIOT_DEVICE_ID;
+            sCloudIotCfg.mRegistryId = CLOUDIOT_REGISTRY_ID;
+            sCloudIotCfg.mProjectId  = CLOUDIOT_PROJECT_ID;
+            sCloudIotCfg.mRegion     = CLOUDIOT_REGION;
+            sCloudIotCfg.mPrivKey    = CLOUDIOT_PRIV_KEY;
+        }
+
+        xTaskCreate(mqttTask, "mqtt", 3000, &sCloudIotCfg, 2, &gTestTask);
     }
 }
 

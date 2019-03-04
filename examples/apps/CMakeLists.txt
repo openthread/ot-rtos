@@ -32,7 +32,7 @@ add_library(test_app
     ${CMAKE_CURRENT_SOURCE_DIR}/test/http.c
     ${CMAKE_CURRENT_SOURCE_DIR}/test/mqtt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/test/tcp_utils.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/test/user.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/test/user.cpp
 )
 
 target_link_libraries(test_app
