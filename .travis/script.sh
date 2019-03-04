@@ -1,3 +1,4 @@
+#!/bin/bash
 #
 #  Copyright (c) 2019, The OpenThread Authors.
 #  All rights reserved.
@@ -26,42 +27,25 @@
 #  POSSIBILITY OF SUCH DAMAGE.
 #
 
-set(FREERTOS_SRCS
-    ${CMAKE_CURRENT_SOURCE_DIR}/repo/FreeRTOS/Source/croutine.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/repo/FreeRTOS/Source/event_groups.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/repo/FreeRTOS/Source/portable/MemMang/heap_3.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/repo/FreeRTOS/Source/list.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/repo/FreeRTOS/Source/queue.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/repo/FreeRTOS/Source/stream_buffer.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/repo/FreeRTOS/Source/tasks.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/repo/FreeRTOS/Source/timers.c)
+set -e
+set -x
 
-add_library(freertos ${FREERTOS_SRCS})
+case $BUILD_TARGET in
+pretty-check)
+    export PATH=$TOOLS_HOME/usr/bin:$PATH
+    ./script/test pretty 
+    ;;
 
-target_include_directories(freertos
-    PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/repo/FreeRTOS/Source/include
-        ${CMAKE_CURRENT_SOURCE_DIR}
-)
+linux-check)
+    ./script/test build_linux
+    ;;
 
-target_link_libraries(freertos
-    PUBLIC
-        freertos_portable
-)
+nrf-check)
+    ./script/bootstrap
+    ./script/test build_nrf52840
+    ;;
 
-target_compile_options(freertos
-    PRIVATE
-       -Wall
-       -Wextra
-       -Wshadow
-       -Wno-type-limits
-       -Werror)
-
-add_library(freertos_port_hdrs INTERFACE)
-
-target_include_directories(freertos_port_hdrs
-    INTERFACE
-        ${CMAKE_CURRENT_SOURCE_DIR}/repo/FreeRTOS/Source/include
-        ${CMAKE_CURRENT_SOURCE_DIR}
-)
-
+*)
+    exit 1
+    ;;
+esac

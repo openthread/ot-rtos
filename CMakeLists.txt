@@ -178,8 +178,12 @@ if (${PLATFORM_NAME} STREQUAL nrf52)
     add_custom_target(ot_demo_101_hex ALL DEPENDS ot_demo_101.hex)
 endif()
 
+set(PORT_DIRS 
+    ./third_party/freertos-addons/port
+    ./third_party/lwip/port
+)
 add_custom_target(pretty
-    find src include \( -name "*.c" -o -name "*.cpp" -o -name "*.h" -o -name "*.hpp" \) -exec bash -c "echo Beautify '{}' && third_party/openthread/repo/script/clang-format.sh -i '{}'" \;
+    find src include ${PORT_DIRS} \( -name "*.c" -o -name "*.cpp" -o -name "*.h" -o -name "*.hpp" \) -exec bash -c "echo Beautify '{}' && third_party/openthread/repo/script/clang-format.sh -i '{}'" \;
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     VERBATIM
     )

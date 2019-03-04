@@ -1,3 +1,4 @@
+#!/bin/bash
 #
 #  Copyright (c) 2019, The OpenThread Authors.
 #  All rights reserved.
@@ -26,42 +27,12 @@
 #  POSSIBILITY OF SUCH DAMAGE.
 #
 
-set(FREERTOS_SRCS
-    ${CMAKE_CURRENT_SOURCE_DIR}/repo/FreeRTOS/Source/croutine.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/repo/FreeRTOS/Source/event_groups.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/repo/FreeRTOS/Source/portable/MemMang/heap_3.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/repo/FreeRTOS/Source/list.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/repo/FreeRTOS/Source/queue.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/repo/FreeRTOS/Source/stream_buffer.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/repo/FreeRTOS/Source/tasks.c
-    ${CMAKE_CURRENT_SOURCE_DIR}/repo/FreeRTOS/Source/timers.c)
+die()
+{
+    echo " *** ERROR: " $*
+    exit 1
+}
 
-add_library(freertos ${FREERTOS_SRCS})
-
-target_include_directories(freertos
-    PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/repo/FreeRTOS/Source/include
-        ${CMAKE_CURRENT_SOURCE_DIR}
-)
-
-target_link_libraries(freertos
-    PUBLIC
-        freertos_portable
-)
-
-target_compile_options(freertos
-    PRIVATE
-       -Wall
-       -Wextra
-       -Wshadow
-       -Wno-type-limits
-       -Werror)
-
-add_library(freertos_port_hdrs INTERFACE)
-
-target_include_directories(freertos_port_hdrs
-    INTERFACE
-        ${CMAKE_CURRENT_SOURCE_DIR}/repo/FreeRTOS/Source/include
-        ${CMAKE_CURRENT_SOURCE_DIR}
-)
-
+sudo add-apt-repository -y ppa:team-gcc-arm-embedded/ppa || die
+sudo apt-get update || die
+sudo apt-get -y install gcc-arm-embedded || die
