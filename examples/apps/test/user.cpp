@@ -35,8 +35,8 @@
 #include <openthread/error.h>
 #include <openthread/openthread-freertos.h>
 
-#include "apps/google_cloud_iot/client_cfg.h"
-#include "apps/google_cloud_iot/mqtt_client.hpp"
+#include "google_cloud_iot/client_cfg.h"
+#include "google_cloud_iot/mqtt_client.hpp"
 
 TaskHandle_t                     gTestTask = NULL;
 ot::app::GoogleCloudIotClientCfg sCloudIotCfg;

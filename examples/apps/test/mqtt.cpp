@@ -38,9 +38,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "apps/google_cloud_iot/client_cfg.h"
-#include "apps/google_cloud_iot/mqtt_client.hpp"
 #include "common/code_utils.hpp"
+#include "google_cloud_iot/client_cfg.h"
+#include "google_cloud_iot/mqtt_client.hpp"
 #include "net/utils/nat64_utils.h"
 #include "net/utils/time_ntp.h"
 
@@ -305,7 +305,7 @@ void configCallback(const char *aTopic, const char *aMsg, uint16_t aMsgLength)
 
 void mqttTask(void *p)
 {
-    ot::app::GoogleCloudIotClientCfg *cfg  = static_cast<ot::app::GoogleCloudIotClientCfg *>(p);
+    ot::app::GoogleCloudIotClientCfg *cfg = static_cast<ot::app::GoogleCloudIotClientCfg *>(p);
     char                              subTopic[50];
     int                               temperature = 0;
 

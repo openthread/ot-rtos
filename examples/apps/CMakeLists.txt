@@ -35,10 +35,32 @@ add_library(test_app
     ${CMAKE_CURRENT_SOURCE_DIR}/test/user.cpp
 )
 
+target_include_directories(test_app
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+
 target_link_libraries(test_app
     PUBLIC
         otr_frameworks
 )
+
+if (DEFINED CLOUDIOT_DEVICE AND DEFINED CLOUDIOT_REGISTRY AND DEFINED CLOUDIOT_PROJECT
+        AND DEFINED CLOUDIOT_REGION AND DEFINED CLOUDIOT_PRIV_KEY)
+    add_custom_command(
+        OUTPUT
+            ${CMAKE_CURRENT_SOURCE_DIR}/include/google_cloud_iot/client_cfg.h
+        COMMAND
+            ${CMAKE_CURRENT_SOURCE_DIR}/script/generate_cloudiot_cfg.sh
+            ${CLOUDIOT_DEVICE} ${CLOUDIOT_REGISTRY} ${CLOUDIOT_PROJECT}
+            ${CLOUDIOT_REGION} ${CLOUDIOT_PRIV_KEY}
+    )
+
+    add_custom_target(client_cfg ALL DEPENDS
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/google_cloud_iot/client_cfg.h)
+
+    add_dependencies(test_app client_cfg)
+endif()
 
 if (${PLATFORM_NAME} STREQUAL nrf52)
     add_library(demo_101
