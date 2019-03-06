@@ -58,7 +58,7 @@ check_pretty() {
 
 print_usage() {
     cat <<EOF
-USAGE: "$0" COMMAND
+USAGE: $0 COMMAND
 
 COMMAND:
     build       Build project for running tests. This can be used to rebuild the project for changes.
@@ -67,7 +67,7 @@ COMMAND:
     help        Print this help.
 
 EXAMPLES:
-    "$0" clean build
+    $0 clean build
 EOF
     exit "$1"
 }
