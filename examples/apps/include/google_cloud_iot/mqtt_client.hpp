@@ -66,15 +66,19 @@ public:
 
     ~GoogleCloudIotMqttClient(void);
 
+    static const int kTopicNameMaxLength = 50;
+    static const int kTopicDataMaxLength = 201;
+    static const uint16_t kMqttPort = 8883;
+
 private:
-    static void sMqttPubSubChanged(void *aArg, err_t aResult);
+    static void MqttPubSubChanged(void *aArg, err_t aResult);
 
-    static void sMqttConnectChanged(mqtt_client_t *aClient, void *aArg, mqtt_connection_status_t aStatus);
+    static void MqttConnectChanged(mqtt_client_t *aClient, void *aArg, mqtt_connection_status_t aStatus);
 
-    static void sMqttDataCallback(void *aArg, const uint8_t *aData, uint16_t aLength, uint8_t aFlags);
+    static void MqttDataCallback(void *aArg, const uint8_t *aData, uint16_t aLength, uint8_t aFlags);
     void        mqttDataCallback(const uint8_t *aData, uint16_t aLength, uint8_t aFlags);
 
-    static void sMqttPublishCallback(void *aArg, const char *aTopic, uint32_t aTotalLength);
+    static void MqttPublishCallback(void *aArg, const char *aTopic, uint32_t aTotalLength);
     void        mqttPublishCallback(const char *aTopic, uint32_t aTotalLength);
 
     GoogleCloudIotClientCfg mConfig;
@@ -87,8 +91,8 @@ private:
     MqttTopicDataCallback mSubCb;
 
     // Currently we only support short message with small buffers
-    char     mSubTopicNameBuf[50];
-    char     mSubDataBuf[201];
+    char     mSubTopicNameBuf[kTopicNameMaxLength];
+    char     mSubDataBuf[kTopicDataMaxLength];
     uint16_t mDataOffset;
 };
 

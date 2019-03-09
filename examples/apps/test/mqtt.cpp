@@ -51,6 +51,8 @@
 #define MQTT_CLIENT_NOTIFY_VALUE (1 << 9)
 #define MQTT_PUBSUB_NOTIFY_VALUE (1 << 10)
 
+using namespace ot::app;
+
 namespace ot {
 namespace app {
 
@@ -72,18 +74,18 @@ static void GetIatExp(char *aIat, char *aExt, int time_size)
 {
     time_t now_seconds = timeNtp();
 
-    snprintf(aIat, (size_t)time_size, "%zu", (size_t)now_seconds);
-    snprintf(aExt, (size_t)time_size, "%zu", (size_t)(now_seconds + 3600));
+    snprintf(aIat, (size_t)time_size, "%zu", static_cast<size_t>(now_seconds));
+    snprintf(aExt, (size_t)time_size, "%zu", static_cast<size_t>(now_seconds + 3600));
 }
 
-void GoogleCloudIotMqttClient::sMqttPubSubChanged(void *aArg, err_t aResult)
+void GoogleCloudIotMqttClient::MqttPubSubChanged(void *aArg, err_t aResult)
 {
     ConnectContext *ctx         = static_cast<ConnectContext *>(aArg);
     ctx->mClient->mPubSubResult = aResult;
     xTaskNotify(ctx->mHandle, MQTT_PUBSUB_NOTIFY_VALUE, eSetBits);
 }
 
-void GoogleCloudIotMqttClient::sMqttConnectChanged(mqtt_client_t *aClient, void *aArg, mqtt_connection_status_t aResult)
+void GoogleCloudIotMqttClient::MqttConnectChanged(mqtt_client_t *aClient, void *aArg, mqtt_connection_status_t aResult)
 {
     (void)aClient;
 
@@ -179,7 +181,7 @@ int GoogleCloudIotMqttClient::Connect(void)
         serverAddr.type = IPADDR_TYPE_V6;
 
         LOCK_TCPIP_CORE();
-        mqtt_client_connect(mMqttClient, &serverAddr, 8883, &GoogleCloudIotMqttClient::sMqttConnectChanged, &ctx,
+        mqtt_client_connect(mMqttClient, &serverAddr, kMqttPort, &GoogleCloudIotMqttClient::MqttConnectChanged, &ctx,
                             &mClientInfo);
         UNLOCK_TCPIP_CORE();
 
@@ -204,7 +206,7 @@ int GoogleCloudIotMqttClient::Publish(const char *aTopic, const char *aMsg, size
 
     ctx.mClient = this;
     ctx.mHandle = xTaskGetCurrentTaskHandle();
-    mqtt_publish(mMqttClient, aTopic, aMsg, aMsgLength, kQos, 0, &GoogleCloudIotMqttClient::sMqttPubSubChanged, &ctx);
+    mqtt_publish(mMqttClient, aTopic, aMsg, aMsgLength, kQos, 0, &GoogleCloudIotMqttClient::MqttPubSubChanged, &ctx);
 
     while ((notifyValue & MQTT_PUBSUB_NOTIFY_VALUE) == 0)
     {
@@ -213,7 +215,7 @@ int GoogleCloudIotMqttClient::Publish(const char *aTopic, const char *aMsg, size
     return (mPubSubResult == 0) ? 0 : -1;
 }
 
-void GoogleCloudIotMqttClient::sMqttDataCallback(void *aArg, const uint8_t *aData, uint16_t aLength, uint8_t aFlags)
+void GoogleCloudIotMqttClient::MqttDataCallback(void *aArg, const uint8_t *aData, uint16_t aLength, uint8_t aFlags)
 {
     GoogleCloudIotMqttClient *client = static_cast<GoogleCloudIotMqttClient *>(aArg);
     client->mqttDataCallback(aData, aLength, aFlags);
@@ -239,7 +241,7 @@ void GoogleCloudIotMqttClient::mqttDataCallback(const uint8_t *aData, uint16_t a
     }
 }
 
-void GoogleCloudIotMqttClient::sMqttPublishCallback(void *aArg, const char *aTopic, uint32_t aTotalLength)
+void GoogleCloudIotMqttClient::MqttPublishCallback(void *aArg, const char *aTopic, uint32_t aTotalLength)
 {
     GoogleCloudIotMqttClient *client = static_cast<GoogleCloudIotMqttClient *>(aArg);
 
@@ -265,8 +267,8 @@ int GoogleCloudIotMqttClient::Subscribe(const char *aTopic, MqttTopicDataCallbac
     ctx.mClient = this;
     ctx.mHandle = xTaskGetCurrentTaskHandle();
 
-    mqtt_set_inpub_callback(mMqttClient, sMqttPublishCallback, sMqttDataCallback, this);
-    mqtt_subscribe(mMqttClient, aTopic, 1, sMqttPubSubChanged, &ctx);
+    mqtt_set_inpub_callback(mMqttClient, MqttPublishCallback, MqttDataCallback, this);
+    mqtt_subscribe(mMqttClient, aTopic, 1, MqttPubSubChanged, &ctx);
     mDataOffset = 0;
 
     while ((notifyValue & MQTT_PUBSUB_NOTIFY_VALUE) == 0)
@@ -298,16 +300,18 @@ GoogleCloudIotMqttClient::~GoogleCloudIotMqttClient(void)
 } // namespace app
 } // namespace ot
 
-void configCallback(const char *aTopic, const char *aMsg, uint16_t aMsgLength)
+static void configCallback(const char *aTopic, const char *aMsg, uint16_t aMsgLength)
 {
     printf("Topic %s get message len = %d %s\r\n", aTopic, aMsgLength, aMsg);
 }
 
+#define MSG_MAX_LENGTH 100
+
 void mqttTask(void *p)
 {
-    ot::app::GoogleCloudIotClientCfg *cfg = static_cast<ot::app::GoogleCloudIotClientCfg *>(p);
-    char                              subTopic[50];
-    int                               temperature = 0;
+    GoogleCloudIotClientCfg *cfg = static_cast<GoogleCloudIotClientCfg *>(p);
+    char                     subTopic[GoogleCloudIotMqttClient::kTopicDataMaxLength];
+    int                      temperature = 0;
 
     ot::app::GoogleCloudIotMqttClient client(*cfg);
 
@@ -321,8 +325,8 @@ void mqttTask(void *p)
 
     while (true)
     {
-        char pubTopic[50];
-        char msg[100];
+        char pubTopic[GoogleCloudIotMqttClient::kTopicDataMaxLength];
+        char msg[MSG_MAX_LENGTH];
 
         temperature++;
         temperature %= 20;
