@@ -39,7 +39,7 @@
 #include "google_cloud_iot/mqtt_client.hpp"
 
 TaskHandle_t                     gTestTask = NULL;
-ot::app::GoogleCloudIotClientCfg sCloudIotCfg;
+static ot::app::GoogleCloudIotClientCfg sCloudIotCfg;
 
 static otError parseLong(char *argv, long *aValue)
 {

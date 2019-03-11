@@ -50,7 +50,11 @@ sed -i "s/your_registry_name/$2/" "${CFG_FILE}"
 sed -i "s/your_project_id/$3/" "${CFG_FILE}"
 sed -i "s/your_region/$4/" "${CFG_FILE}"
 
-cat "$5" | sed 's/^/"/' | sed 's/$/\\n" \\/' | head --bytes -2 >> "${CFG_FILE}"
+if [[ -e "$5" ]]; then
+    cat "$5" | sed 's/^/"/' | sed 's/$/\\n" \\/' | head --bytes -2 >> "${CFG_FILE}"
+else
+    echo '""' >> "${CFG_FILE}"
+fi
 
 echo \
 '
