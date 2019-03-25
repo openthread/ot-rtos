@@ -156,7 +156,6 @@ static err_t altcp_mbedtls_lower_accept(void *arg, struct altcp_pcb *accepted_co
  */
 static err_t altcp_mbedtls_lower_connected(void *arg, struct altcp_pcb *inner_conn, err_t err)
 {
-    // log("lower tcp connected\r\n");
     struct altcp_pcb *conn = (struct altcp_pcb *)arg;
     LWIP_UNUSED_ARG(inner_conn); /* for LWIP_NOASSERT */
     if (conn && conn->state)
@@ -284,7 +283,6 @@ static err_t altcp_mbedtls_lower_recv_process(struct altcp_pcb *conn, altcp_mbed
             state->bio_bytes_read = 0;
         }
 
-        // log("Ssl connect state %d\r\n", state->ssl_context.state);
         if (ret == MBEDTLS_ERR_SSL_WANT_READ || ret == MBEDTLS_ERR_SSL_WANT_WRITE)
         {
             /* handshake not done, wait for more recv calls */
@@ -751,9 +749,7 @@ static struct altcp_tls_config *altcp_tls_create_config(int is_server, int have_
                     ("altcp_tls: TCP_WND is smaller than the RX decrypion buffer, connection RX might stall!\n"));
     }
 
-    // log("create cfg1\r\n");
     altcp_mbedtls_mem_init();
-    // log("create cfg2\r\n");
 
     sz = sizeof(struct altcp_tls_config);
     if (have_cert)
@@ -769,10 +765,7 @@ static struct altcp_tls_config *altcp_tls_create_config(int is_server, int have_
         sz += sizeof(mbedtls_pk_context);
     }
 
-    // log("create cfg3 alloc size %u\r\n", sz);
-
     conf = (struct altcp_tls_config *)altcp_mbedtls_alloc_config(sz);
-    // log("Get conf %p\r\n", conf);
     if (conf == NULL)
     {
         return NULL;
@@ -898,7 +891,6 @@ static struct altcp_tls_config *altcp_tls_create_config_client_common(const u8_t
     struct altcp_tls_config *conf = altcp_tls_create_config(0, is_2wayauth, is_2wayauth, ca != NULL);
     if (conf == NULL)
     {
-        // log("Create config failed\r\n");
         return NULL;
     }
 
@@ -939,7 +931,6 @@ struct altcp_tls_config *altcp_tls_create_config_client_2wayauth(const u8_t *ca,
     int                      ret;
     struct altcp_tls_config *conf;
 
-    // log("load start \r\n");
     if (!cert || !privkey)
     {
         LWIP_DEBUGF(ALTCP_MBEDTLS_DEBUG,
@@ -947,7 +938,6 @@ struct altcp_tls_config *altcp_tls_create_config_client_2wayauth(const u8_t *ca,
         return NULL;
     }
 
-    // log("common config\r\n");
     conf = altcp_tls_create_config_client_common(ca, ca_len, 1);
     if (conf == NULL)
     {
@@ -955,10 +945,8 @@ struct altcp_tls_config *altcp_tls_create_config_client_2wayauth(const u8_t *ca,
     }
 
     /* Initialize the client certificate and corresponding private key */
-    // log("read cert\r\n");
     mbedtls_x509_crt_init(conf->cert);
     ret = mbedtls_x509_crt_parse(conf->cert, cert, cert_len);
-    // log("read cert ret %d\r\n", ret);
     if (ret != 0)
     {
         LWIP_DEBUGF(ALTCP_MBEDTLS_DEBUG, ("mbedtls_x509_crt_parse cert failed: %d 0x%x", ret, -1 * ret));
@@ -966,11 +954,8 @@ struct altcp_tls_config *altcp_tls_create_config_client_2wayauth(const u8_t *ca,
         return NULL;
     }
 
-    // log("read pk\r\n");
     mbedtls_pk_init(conf->pkey);
-    // log("read pk key len %u\r\n", privkey_len);
     ret = mbedtls_pk_parse_key(conf->pkey, privkey, privkey_len, privkey_pass, privkey_pass_len);
-    // log("read pk ret %d\r\n", ret);
     if (ret != 0)
     {
         LWIP_DEBUGF(ALTCP_MBEDTLS_DEBUG, ("mbedtls_pk_parse_key failed: %d 0x%x", ret, -1 * ret));
@@ -1049,7 +1034,6 @@ static err_t altcp_mbedtls_connect(struct altcp_pcb * conn,
                                    u16_t              port,
                                    altcp_connected_fn connected)
 {
-    // log("Start lower tcp connect\r\n");
     if (conn == NULL)
     {
         return ERR_VAL;

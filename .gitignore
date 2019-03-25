@@ -14,13 +14,12 @@ sdkconfig.old
 
 TEST_LOGS
 
-# gcov coverage reports
 *.gcda
 *.gcno
 coverage.info
 coverage_report/
 
-# private google cloud iot configs
+#private google cloud iot configs
 client_cfg.h
 
 #auto generated headers from cmake
