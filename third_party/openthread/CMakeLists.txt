@@ -142,6 +142,14 @@ set_property(TARGET openthread_cli_ftd PROPERTY IMPORTED_LINK_DEPENDENT_LIBRARIE
 add_library(ot_platform_${PLATFORM_NAME} STATIC IMPORTED)
 set_property(TARGET ot_platform_${PLATFORM_NAME} PROPERTY IMPORTED_LOCATION ${BINARY_DIR}/output/${OT_BUILD_DIR}/lib/libopenthread-${OT_PLATFORM_NAME}.a)
 
+if (${PLATFORM_NAME} STREQUAL nrf52)
+    add_library(nrf52840_radio STATIC IMPORTED)
+    set_property(TARGET nrf52840_radio PROPERTY IMPORTED_LOCATION ${BINARY_DIR}/output/${OT_BUILD_DIR}/lib/libnordicsemi-nrf52840-radio-driver.a)
+    add_library(nrf52840_sdk STATIC IMPORTED)
+    set_property(TARGET nrf52840_sdk PROPERTY IMPORTED_LOCATION ${BINARY_DIR}/output/${OT_BUILD_DIR}/lib/libnordicsemi-nrf52840-sdk.a)
+    set_property(TARGET ot_platform_${PLATFORM_NAME} PROPERTY IMPORTED_LINK_DEPENDENT_LIBRARIES nrf52840_radio nrf52840_sdk)
+endif()
+
 add_library(platform_${PLATFORM_NAME} INTERFACE)
 
 target_include_directories(platform_${PLATFORM_NAME}
@@ -155,6 +163,14 @@ target_link_libraries(platform_${PLATFORM_NAME}
     INTERFACE
         ot_platform_${PLATFORM_NAME}
 )
+
+if (${PLATFORM_NAME} STREQUAL nrf52)
+    target_link_libraries(platform_${PLATFORM_NAME}
+        INTERFACE
+            nrf52840_radio
+            nrf52840_sdk
+    )
+endif()
 
 target_compile_definitions(platform_${PLATFORM_NAME}
     INTERFACE
