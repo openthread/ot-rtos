@@ -78,6 +78,7 @@ static void mainloop(void *aContext)
 {
     otInstance *instance = (otInstance *)aContext;
 
+    otrSystemProcess(instance);
     xSemaphoreTake(sExternalLock, portMAX_DELAY);
     while (!otSysPseudoResetWasRequested())
     {
