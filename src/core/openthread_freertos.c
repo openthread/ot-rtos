@@ -107,11 +107,6 @@ void otrTaskNotifyGiveFromISR()
     BaseType_t taskWoken;
 
     vTaskNotifyGiveFromISR(sMainTask, &taskWoken);
-
-    if (taskWoken)
-    {
-        portEND_SWITCHING_ISR(taskWoken);
-    }
 #endif
 }
 
