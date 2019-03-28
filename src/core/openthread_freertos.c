@@ -43,6 +43,8 @@
 #include <openthread/diag.h>
 #include <openthread/tasklet.h>
 
+#include <mbedtls/platform.h>
+
 #include "netif.h"
 #include "otr_system.h"
 #include "uart_lock.h"
@@ -52,6 +54,16 @@
 static TaskHandle_t      sMainTask     = NULL;
 static SemaphoreHandle_t sExternalLock = NULL;
 static otInstance *      sInstance     = NULL;
+
+static void *mbedtlsCAlloc(size_t aCount, size_t aSize)
+{
+    return calloc(aCount, aSize);
+}
+
+static void mbedtlsFree(void *aPointer)
+{
+    return free(aPointer);
+}
 
 static void setupNat64()
 {
@@ -112,6 +124,8 @@ void otTaskletsSignalPending(otInstance *aInstance)
 
 void otrInit(int argc, char *argv[])
 {
+    mbedtls_platform_set_calloc_free(mbedtlsCAlloc, mbedtlsFree);
+
     otrUartLockInit();
     otSysInit(argc, argv);
 
