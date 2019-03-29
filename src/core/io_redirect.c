@@ -45,6 +45,91 @@
 #define STDERR_FILENO 2
 #endif
 
+#if PLATFORM_nrf52 && (USB_CDC_AS_SERIAL_TRANSPORT == 1)
+
+#include "platform-nrf5.h"
+#include <drivers/clock/nrf_drv_clock.h>
+#include <hal/nrf_gpio.h>
+#include <hal/nrf_uart.h>
+
+static bool sUartEnabled = false;
+
+void debugUartInit()
+{
+    nrf_gpio_pin_set(UART_PIN_TX);
+    nrf_gpio_cfg_output(UART_PIN_TX);
+    nrf_gpio_cfg_input(UART_PIN_RX, NRF_GPIO_PIN_NOPULL);
+    nrf_uart_txrx_pins_set(UART_INSTANCE, UART_PIN_TX, UART_PIN_RX);
+
+    nrf_uart_configure(UART_INSTANCE, UART_PARITY, NRF_UART_HWFC_DISABLED);
+    nrf_uart_baudrate_set(UART_INSTANCE, UART_BAUDRATE);
+
+    nrf_uart_event_clear(UART_INSTANCE, NRF_UART_EVENT_TXDRDY);
+
+    nrf_drv_clock_hfclk_request(NULL);
+    while (!nrf_drv_clock_hfclk_is_running())
+        ;
+
+    nrf_uart_enable(UART_INSTANCE);
+    sUartEnabled = true;
+}
+
+void debugUartputc(char c)
+{
+    nrf_uart_txd_set(UART_INSTANCE, c);
+    nrf_uart_task_trigger(UART_INSTANCE, NRF_UART_TASK_STARTTX);
+    while (!nrf_uart_event_check(UART_INSTANCE, NRF_UART_EVENT_TXDRDY))
+        ;
+    nrf_uart_event_clear(UART_INSTANCE, NRF_UART_EVENT_TXDRDY);
+    nrf_uart_task_trigger(UART_INSTANCE, NRF_UART_TASK_STOPTX);
+}
+
+void debugUartPuts(const char *aStr, size_t aLength)
+{
+    if (!sUartEnabled)
+    {
+        debugUartInit();
+    }
+    for (size_t i = 0; i < aLength; i++)
+    {
+        debugUartputc(aStr[i]);
+    }
+}
+
+#else
+
+void debugUartPuts(const char *aStr, size_t aLength)
+{
+    otCliOutput(aStr, aLength);
+}
+
+#endif // PLATFROM_nrf52 && USB_CDC_AS_SERIAL_TRANSPORT == 1
+
+#if !PLATFORM_linux
+
+int _write(int aFile, const void *aStr, size_t aLength)
+{
+    int ret = aLength;
+
+    if (aFile == STDOUT_FILENO)
+    {
+        otCliOutput(aStr, aLength);
+    }
+    else if (aFile == STDERR_FILENO)
+    {
+        debugUartPuts(aStr, aLength);
+    }
+    else
+    {
+        errno = EBADF;
+        ret   = -1;
+    }
+
+    return ret;
+}
+
+#endif
+
 #if OPENTHREAD_CONFIG_LOG_OUTPUT == OPENTHREAD_CONFIG_LOG_OUTPUT_APP
 void otPlatLog(otLogLevel aLogLevel, otLogRegion aLogRegion, const char *aFormat, ...)
 {
@@ -58,20 +143,3 @@ void otPlatLog(otLogLevel aLogLevel, otLogRegion aLogRegion, const char *aFormat
     va_end(ap);
 }
 #endif
-
-int _write(int aFile, const void *aStr, size_t aLength)
-{
-    int ret = aLength;
-
-    if (aFile == STDOUT_FILENO || aFile == STDERR_FILENO)
-    {
-        otCliOutput(aStr, aLength);
-    }
-    else
-    {
-        errno = EBADF;
-        ret   = -1;
-    }
-
-    return ret;
-}
