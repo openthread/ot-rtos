@@ -74,8 +74,13 @@ static void GetIatExp(char *aIat, char *aExt, int time_size)
 {
     time_t now_seconds = timeNtp();
 
+#ifdef PLATFORM_linux
     snprintf(aIat, (size_t)time_size, "%zu", static_cast<size_t>(now_seconds));
     snprintf(aExt, (size_t)time_size, "%zu", static_cast<size_t>(now_seconds + 3600));
+#else // arm gcc has some problems handling %zu
+    snprintf(aIat, (size_t)time_size, "%lu", static_cast<size_t>(now_seconds));
+    snprintf(aExt, (size_t)time_size, "%lu", static_cast<size_t>(now_seconds + 3600));
+#endif
 }
 
 void GoogleCloudIotMqttClient::MqttPubSubChanged(void *aArg, err_t aResult)
