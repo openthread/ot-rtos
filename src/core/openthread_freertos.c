@@ -62,7 +62,7 @@ static void *mbedtlsCAlloc(size_t aCount, size_t aSize)
 
 static void mbedtlsFree(void *aPointer)
 {
-    return free(aPointer);
+    free(aPointer);
 }
 
 static void setupNat64()
