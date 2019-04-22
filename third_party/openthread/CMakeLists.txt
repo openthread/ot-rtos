@@ -188,6 +188,13 @@ if (${PLATFORM_NAME} STREQUAL nrf52)
             NRF52840_XXAA
     )
 
+    if (USB_CDC)
+        target_compile_definitions(platform_${PLATFORM_NAME}
+            INTERFACE
+                USB_CDC_AS_SERIAL_TRANSPORT=1
+        )
+    endif()
+
 endif()
 
 add_library(openthread INTERFACE)

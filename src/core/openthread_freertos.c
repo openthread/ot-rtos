@@ -76,6 +76,7 @@ static void setupNat64()
 
 static void mainloop(void *aContext)
 {
+    int         i        = 0;
     otInstance *instance = (otInstance *)aContext;
 
     otrSystemProcess(instance);
