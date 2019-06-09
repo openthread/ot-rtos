@@ -22,5 +22,6 @@ coverage_report/
 #private google cloud iot configs
 client_cfg.h
 .vscode
+.sh
 #auto generated headers from cmake
 third_party/libjwt/config.h
