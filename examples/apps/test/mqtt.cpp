@@ -339,7 +339,7 @@ void mqttTask(void *p)
         snprintf(msg, sizeof(msg), "{\"temperature\": %d}", temperature - 5);
         client.Publish(pubTopic, msg, strlen(msg));
         printf("Publish message: %s\r\n", msg);
-        vTaskDelay(2000);
+        vTaskDelay(pdMS_TO_TICKS(2000));
     }
 
 exit:
