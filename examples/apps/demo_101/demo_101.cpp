@@ -149,7 +149,7 @@ void demo101Task(void *p)
     printf("Enable thread\n");
     OT_API_CALL(otThreadSetEnabled(otrGetInstance(), true));
     // wait a while for thread to connect
-    vTaskDelay(2000);
+    vTaskDelay(pdMS_TO_TICKS(2000));
 
     // dns64 www.google.com
     printf("Start curl www.google.com\n");
@@ -164,7 +164,7 @@ void demo101Task(void *p)
         httpc_state_t *connection;
         httpc_get_file(&serverAddr, 80, "/", &httpSettings, HttpRecvCallback, NULL, &connection);
         WaitForSignal(HTTP_BIT);
-        if (xTaskNotifyWait(BUTTON_BIT, BUTTON_BIT, &notifyValue, 10000) == pdTRUE)
+        if (xTaskNotifyWait(BUTTON_BIT, BUTTON_BIT, &notifyValue, pdMS_TO_TICKS(10000)) == pdTRUE)
         {
             break;
         }
