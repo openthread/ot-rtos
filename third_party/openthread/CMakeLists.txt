@@ -145,6 +145,7 @@ set_property(TARGET openthread_cli_ftd PROPERTY IMPORTED_LINK_DEPENDENT_LIBRARIE
 
 add_library(ot_platform_${PLATFORM_NAME} STATIC IMPORTED)
 set_property(TARGET ot_platform_${PLATFORM_NAME} PROPERTY IMPORTED_LOCATION ${BINARY_DIR}/output/${OT_BUILD_DIR}/lib/libopenthread-${OT_PLATFORM_NAME}.a)
+set_property(TARGET ot_platform_${PLATFORM_NAME} PROPERTY IMPORTED_LINK_DEPENDENT_LIBRARIES openthread_ftd)
 
 if (${PLATFORM_NAME} STREQUAL nrf52)
     add_library(nrf52840_radio STATIC IMPORTED)
