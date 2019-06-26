@@ -35,7 +35,7 @@ int otrMbedtlsEntropyPoll(void *aData, unsigned char *aOutput, size_t aInLen, si
 {
     (void)aData;
 
-    int rval = 0;
+    int     rval  = 0;
     otError error = otPlatEntropyGet((uint8_t *)aOutput, (uint16_t)aInLen);
 
     if (aOutLen != NULL)
