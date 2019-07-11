@@ -150,6 +150,7 @@ set_property(TARGET ot_platform_${PLATFORM_NAME} PROPERTY IMPORTED_LINK_DEPENDEN
 if (${PLATFORM_NAME} STREQUAL nrf52)
     add_library(nrf52840_radio STATIC IMPORTED)
     set_property(TARGET nrf52840_radio PROPERTY IMPORTED_LOCATION ${BINARY_DIR}/output/${OT_BUILD_DIR}/lib/libnordicsemi-nrf52840-radio-driver.a)
+    set_property(TARGET nrf52840_radio PROPERTY IMPORTED_LINK_DEPENDENT_LIBRARIES openthread_ftd)
     add_library(nrf52840_sdk STATIC IMPORTED)
     set_property(TARGET nrf52840_sdk PROPERTY IMPORTED_LOCATION ${BINARY_DIR}/output/${OT_BUILD_DIR}/lib/libnordicsemi-nrf52840-sdk.a)
     set_property(TARGET ot_platform_${PLATFORM_NAME} PROPERTY IMPORTED_LINK_DEPENDENT_LIBRARIES nrf52840_radio nrf52840_sdk)
@@ -174,6 +175,11 @@ if (${PLATFORM_NAME} STREQUAL nrf52)
         INTERFACE
             nrf52840_radio
             nrf52840_sdk
+    )
+elseif(${PLATFORM_NAME} STREQUAL linux)
+    target_link_libraries(platform_${PLATFORM_NAME}
+        INTERFACE
+            rt
     )
 endif()
 
@@ -202,12 +208,12 @@ add_library(openthread INTERFACE)
 
 target_link_libraries(openthread
     INTERFACE
-        mbedcrypto
         openthread_cli_ftd
         openthread_diag
         openthread_ftd
         openthread_platform_utils
         ot_platform_${PLATFORM_NAME}
+        mbedtls
 )
 
 if (${PLATFORM_NAME} STREQUAL nrf52)
@@ -230,4 +236,4 @@ if (${PLATFORM_NAME} STREQUAL nrf52)
 endif()
 
 add_dependencies(openthread ot)
-add_dependencies(ot mbedcrypto)
+add_dependencies(ot mbedtls)
