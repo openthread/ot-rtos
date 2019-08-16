@@ -65,15 +65,6 @@ static void mbedtlsFree(void *aPointer)
     free(aPointer);
 }
 
-static void setupNat64()
-{
-    ip6_addr_t nat64Prefix;
-
-    nat64Prefix.zone = 0;
-    inet_pton(AF_INET6, "64:ff9b::", nat64Prefix.addr);
-    setNat64Prefix(&nat64Prefix);
-}
-
 static void mainloop(void *aContext)
 {
     int         i        = 0;
@@ -133,7 +124,6 @@ void otrInit(int argc, char *argv[])
     otDiagInit(sInstance);
 #endif
     tcpip_init(netifInit, sInstance);
-    setupNat64();
 
     sExternalLock = xSemaphoreCreateMutex();
     assert(sExternalLock != NULL);

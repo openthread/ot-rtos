@@ -39,6 +39,8 @@
 
 #include <lwip/altcp_tcp.h>
 #include <lwip/apps/http_client.h>
+#include <lwip/netdb.h>
+#include <lwip/tcpip.h>
 
 #include <nrfx/hal/nrf_gpio.h>
 #include <nrfx/hal/nrf_gpiote.h>
@@ -59,6 +61,15 @@
 #define GPIO_PRIORITY 6
 
 static TaskHandle_t sDemoTask;
+
+static void setupNat64(void)
+{
+    ip6_addr_t nat64Prefix;
+
+    nat64Prefix.zone = 0;
+    inet_pton(AF_INET6, "64:ff9b::", nat64Prefix.addr);
+    setNat64Prefix(&nat64Prefix);
+}
 
 static void HandleJoinerCallback(otError aError, void *aContext)
 {
@@ -148,6 +159,7 @@ void demo101Task(void *p)
     // thread start
     printf("Enable thread\n");
     OT_API_CALL(otThreadSetEnabled(otrGetInstance(), true));
+    setupNat64();
     // wait a while for thread to connect
     vTaskDelay(pdMS_TO_TICKS(2000));
 

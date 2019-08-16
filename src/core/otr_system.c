@@ -36,26 +36,30 @@
 #include <platform-posix.h>
 #include <openthread/tasklet.h>
 
+static struct otrSystemCtx
+{
+    fd_set read_fds;
+    fd_set write_fds;
+    fd_set error_fds;
+} sCtx;
+
 void otrSystemPoll(otInstance *aInstance)
 {
-    fd_set         read_fds;
-    fd_set         write_fds;
-    fd_set         error_fds;
     int            max_fd = -1;
     struct timeval timeout;
     int            rval;
 
-    FD_ZERO(&read_fds);
-    FD_ZERO(&write_fds);
-    FD_ZERO(&error_fds);
+    FD_ZERO(&sCtx.read_fds);
+    FD_ZERO(&sCtx.write_fds);
+    FD_ZERO(&sCtx.error_fds);
 
-    platformUartUpdateFdSet(&read_fds, &write_fds, &error_fds, &max_fd);
-    platformRadioUpdateFdSet(&read_fds, &write_fds, &max_fd);
+    platformUartUpdateFdSet(&sCtx.read_fds, &sCtx.write_fds, &sCtx.error_fds, &max_fd);
+    platformRadioUpdateFdSet(&sCtx.read_fds, &sCtx.write_fds, &max_fd);
     platformAlarmUpdateTimeout(&timeout);
 
     if (!otTaskletsArePending(aInstance))
     {
-        rval = select(max_fd + 1, &read_fds, &write_fds, &error_fds, &timeout);
+        rval = select(max_fd + 1, &sCtx.read_fds, &sCtx.write_fds, &sCtx.error_fds, &timeout);
 
         if ((rval < 0) && (errno != EINTR))
         {
@@ -68,7 +72,7 @@ void otrSystemPoll(otInstance *aInstance)
 void otrSystemProcess(otInstance *aInstance)
 {
     platformUartProcess();
-    platformRadioProcess(aInstance);
+    platformRadioProcess(aInstance, &sCtx.read_fds, &sCtx.write_fds);
     platformAlarmProcess(aInstance);
 }
 

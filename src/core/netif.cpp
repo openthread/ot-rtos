@@ -131,7 +131,7 @@ static err_t netifInit(struct netif *aNetif)
     aNetif->name[1]    = 't';
     aNetif->hwaddr_len = sizeof(otExtAddress);
     memset(aNetif->hwaddr, 0, sizeof(aNetif->hwaddr));
-    aNetif->mtu    = OPENTHREAD_CONFIG_IPV6_DEFAULT_MAX_DATAGRAM;
+    aNetif->mtu    = OPENTHREAD_CONFIG_IP6_MAX_DATAGRAM_LENGTH;
     aNetif->flags  = NETIF_FLAG_BROADCAST;
     aNetif->output = NULL;
 #if LWIP_IPV6
