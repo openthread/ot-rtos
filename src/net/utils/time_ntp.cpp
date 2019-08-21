@@ -69,7 +69,7 @@ uint64_t timeNtp()
     if (dnsNat64Address("time.google.com", &serverAddr) == 0)
     {
         memset(&messageInfo, 0, sizeof(messageInfo));
-        messageInfo.mInterfaceId = OT_NETIF_INTERFACE_ID_THREAD;
+        messageInfo.mIsHostInterface = false;
         memcpy(&messageInfo.mPeerAddr, serverAddr.addr, sizeof(messageInfo.mPeerAddr));
         messageInfo.mPeerPort = OT_SNTP_DEFAULT_SERVER_PORT;
 

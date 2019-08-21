@@ -55,7 +55,6 @@ target_compile_definitions(mbedcrypto
         $<TARGET_PROPERTY:mbedtls_platform_config,INTERFACE_COMPILE_DEFINITIONS>
 )
 
-
 target_link_libraries(mbedcrypto
     INTERFACE
         platform_${PLATFORM_NAME}
