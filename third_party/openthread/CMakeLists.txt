@@ -66,8 +66,17 @@ if (${PLATFORM_NAME} STREQUAL nrf52)
     )
 endif()
 
-set(OT_CPPFLAGS "-DOT_CLI_UART_LOCK_HDR_FILE=\"uart_lock.h\" -DOPENTHREAD_CONFIG_MAX_STATECHANGE_HANDLERS=4 -I$<JOIN:$<TARGET_PROPERTY:otr_core,INTERFACE_INCLUDE_DIRECTORIES>, -I> -I$<JOIN:$<TARGET_PROPERTY:otr_core,INTERFACE_INCLUDE_DIRECTORIES>, -I> -D$<JOIN:$<TARGET_PROPERTY:otr_core,INTERFACE_COMPILE_DEFINITIONS>, -D>")
-set(OT_SWITCHES "JOINER=1 SNTP_CLIENT=1 DISABLE_BUILTIN_MBEDTLS=1 DISABLE_EXECUTABLE=1")
+set(OT_CPPFLAGS "-DOPENTHREAD_CONFIG_JOINER_ENABLE=1 \
+                 -DOPENTHREAD_CONFIG_SNTP_CLIENT_ENABLE=1 \
+                 -DOPENTHREAD_CONFIG_COAP_SECURE_API_ENABLE=1 \
+                 -DOPENTHREAD_CONFIG_COAP_API_ENABLE=1 \
+                 -DOPENTHREAD_CONFIG_MAX_STATECHANGE_HANDLERS=4 \
+                 -DOT_CLI_UART_LOCK_HDR_FILE=\"uart_lock.h\" \
+                 -I$<JOIN:$<TARGET_PROPERTY:otr_core,INTERFACE_INCLUDE_DIRECTORIES>, -I> \
+                 -I$<JOIN:$<TARGET_PROPERTY:otr_core,INTERFACE_INCLUDE_DIRECTORIES>, -I> \
+                 -D$<JOIN:$<TARGET_PROPERTY:otr_core,INTERFACE_COMPILE_DEFINITIONS>, -D>")
+
+set(OT_SWITCHES "DISABLE_BUILTIN_MBEDTLS=1 DISABLE_EXECUTABLE=1")
 
 if (${PLATFORM_NAME} STREQUAL nrf52 AND USB_CDC)
     set(OT_SWITCHES "${OT_SWITCHES} USB=1")
@@ -101,6 +110,10 @@ target_compile_definitions(openthread_config
     INTERFACE
         OPENTHREAD_PROJECT_CORE_CONFIG_FILE=\"openthread-core-${OT_PLATFORM_NAME}-config.h\"
         OPENTHREAD_CONFIG_MAX_STATECHANGE_HANDLERS=4
+        OPENTHREAD_CONFIG_JOINER_ENABLE=1
+        OPENTHREAD_CONFIG_SNTP_CLIENT_ENABLE=1
+        OPENTHREAD_CONFIG_COAP_API_ENABLE=1
+        OPENTHREAD_CONFIG_COAP_SECURE_API_ENABLE=1
 )
 
 if (${PLATFORM_NAME} STREQUAL nrf52)
@@ -128,9 +141,6 @@ if (${PLATFORM_NAME} STREQUAL nrf52)
     add_library(nrf_cc310 STATIC IMPORTED)
     set_property(TARGET nrf_cc310 PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/repo/third_party/NordicSemiconductor/libraries/nrf_cc310/lib/libnrf_cc310_0.9.10.a)
 endif()
-
-add_library(openthread_diag STATIC IMPORTED)
-set_property(TARGET openthread_diag PROPERTY IMPORTED_LOCATION ${BINARY_DIR}/output/${OT_BUILD_DIR}/lib/libopenthread-diag.a)
 
 add_library(openthread_platform_utils STATIC IMPORTED)
 set_property(TARGET openthread_platform_utils PROPERTY IMPORTED_LOCATION ${BINARY_DIR}/output/${OT_BUILD_DIR}/lib/libopenthread-platform-utils.a)
@@ -209,7 +219,6 @@ add_library(openthread INTERFACE)
 target_link_libraries(openthread
     INTERFACE
         openthread_cli_ftd
-        openthread_diag
         openthread_ftd
         openthread_platform_utils
         ot_platform_${PLATFORM_NAME}
@@ -220,6 +229,11 @@ if (${PLATFORM_NAME} STREQUAL nrf52)
     target_link_libraries(platform_${PLATFORM_NAME}
         INTERFACE
             nrf_cc310
+    )
+elseif (${PLATFORM_NAME} STREQUAL linux)
+    target_link_libraries(platform_${PLATFORM_NAME}
+        INTERFACE
+            rt
     )
 endif()
 

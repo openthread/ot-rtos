@@ -54,6 +54,7 @@ target_compile_options(jansson
         -Werror
         -Wno-unused-parameter
         -Wno-unused-function
+        -Wno-format-truncation
 )
 
 target_compile_definitions(jansson

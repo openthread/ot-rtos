@@ -45,8 +45,7 @@ set(FIRST_PARTY_COMPILE_FLAGS
    -Wshadow
    -Werror
    $<$<COMPILE_LANGUAGE:CXX>:
-       -std=gnu++98
-       -Wno-c++14-compat
+       -std=gnu++14
        -fno-exceptions
        -fno-rtti
    >
@@ -150,7 +149,6 @@ if (${PLATFORM_NAME} STREQUAL nrf52)
             __HEAP_SIZE=8192
             __STACK_SIZE=8192
     )
-
 
     target_compile_definitions(ot_cli_${PLATFORM_NAME}
         PUBLIC
