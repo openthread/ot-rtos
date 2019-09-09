@@ -31,6 +31,7 @@
  *   This file implements lwip net interface with OpenThread.
  */
 
+#include <lwip/mld6.h>
 #include <lwip/netif.h>
 #include <lwip/tcpip.h>
 #include <lwip/udp.h>
@@ -53,8 +54,7 @@
 
 #include "netif.h"
 
-static const size_t  kMaxIp6Size            = 1500;
-static const uint8_t kMulticastPrefixLength = 128;
+static const size_t kMaxIp6Size = 1500;
 
 /**
  * This structure stores information needed to send a IPv6 packet.
@@ -147,12 +147,22 @@ struct netif *otrGetNetif(void)
     return &sNetif;
 }
 
+static void addMulticastAddress(const otIp6Address &aAddress)
+{
+    ip6_addr_t multicast_addr;
+
+    memcpy(&multicast_addr.addr, &aAddress, sizeof(aAddress));
+    multicast_addr.zone = IP6_NO_ZONE;
+    mld6_joingroup_netif(&sNetif, &multicast_addr);
+}
+
 static void addAddress(const otIp6Address &aAddress)
 {
     otError error = OT_ERROR_NONE;
     err_t   err   = ERR_OK;
 
     LOCK_TCPIP_CORE();
+
     if (IsLinkLocal(aAddress))
     {
         netif_ip6_addr_set(&sNetif, 0, reinterpret_cast<const ip6_addr_t *>(&aAddress));
@@ -182,6 +192,15 @@ exit:
     {
         otLogInfoPlat("Failed to add address: %d", error);
     }
+}
+
+static void delMulticastAddress(const otIp6Address &aAddress)
+{
+    ip6_addr_t multicast_addr;
+
+    memcpy(&multicast_addr.addr, &aAddress, sizeof(aAddress));
+    multicast_addr.zone = IP6_NO_ZONE;
+    mld6_leavegroup_netif(&sNetif, &multicast_addr);
 }
 
 static void delAddress(const otIp6Address &aAddress)
@@ -234,13 +253,27 @@ static void processAddress(const otIp6Address *aAddress, uint8_t aPrefixLength, 
 {
     (void)aContext;
 
+    // All multicast addresses have prefix ff00::/8
+    bool isMulticast = (aAddress->mFields.m8[0] == 0xff);
+
     otLogInfoPlat("address changed");
 
-    if (aPrefixLength != kMulticastPrefixLength)
+    if (aIsAdded)
     {
-        if (aIsAdded)
+        if (isMulticast)
+        {
+            addMulticastAddress(*aAddress);
+        }
+        else
         {
             addAddress(*aAddress);
+        }
+    }
+    else
+    {
+        if (isMulticast)
+        {
+            delMulticastAddress(*aAddress);
         }
         else
         {
