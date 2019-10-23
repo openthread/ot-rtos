@@ -78,7 +78,7 @@ int jwt_verify_sha_hmac(jwt_t *jwt, const char *head, const char *sig)
         size_t buf_len = len * 2;
         size_t base64_len;
         buf = alloca(len * 2);
-        mbedtls_base64_encode((unsigned char *)buf, base64_len, &base64_len, (unsigned char *)sig_check, len);
+        mbedtls_base64_encode((unsigned char *)buf, buf_len, &base64_len, (unsigned char *)sig_check, len);
         jwt_base64uri_encode(buf);
 
         if (!strcmp(sig, buf))
