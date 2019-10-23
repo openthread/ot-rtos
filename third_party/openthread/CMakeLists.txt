@@ -35,9 +35,11 @@ include(ExternalProject)
 
 if (${PLATFORM_NAME} STREQUAL nrf52)
     set(OT_PLATFORM_NAME nrf52840)
+    set(OT_PLATFORM_DIR nrf528xx/nrf52840)
     set(OT_BUILD_DIR nrf52840)
 elseif(${PLATFORM_NAME} STREQUAL linux)
     set(OT_PLATFORM_NAME posix)
+    set(OT_PLATFORM_DIR posix)
     set(OT_BUILD_DIR x86_64-unknown-linux-gnu)
 else()
     set(OT_PLATFORM_NAME ${PLATFORM_NAME})
@@ -47,7 +49,7 @@ message("PLATFORM_NAME is ${PLATFORM_NAME}")
 message("OT_PLATFORM_NAME is ${OT_PLATFORM_NAME}")
 
 set(PLATFORM_CONFIG_INCLUDE_DIRECTORIES
-    ${CMAKE_CURRENT_SOURCE_DIR}/repo/examples/platforms/${OT_PLATFORM_NAME}
+    ${CMAKE_CURRENT_SOURCE_DIR}/repo/examples/platforms/${OT_PLATFORM_DIR}
 )
 
 if (${PLATFORM_NAME} STREQUAL nrf52)
@@ -239,7 +241,7 @@ endif()
 
 target_include_directories(openthread INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/repo/examples/platforms
-    ${CMAKE_CURRENT_SOURCE_DIR}/repo/examples/platforms/${OT_PLATFORM_NAME}
+    ${CMAKE_CURRENT_SOURCE_DIR}/repo/examples/platforms/${OT_PLATFORM_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/repo/src/core
 )
 
