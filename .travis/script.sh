@@ -32,8 +32,7 @@ set -x
 
 case $BUILD_TARGET in
 pretty-check)
-    export PATH=$TOOLS_HOME/usr/bin:$PATH
-    ./script/test pretty 
+    ./script/make-pretty check
     ;;
 
 linux-check)

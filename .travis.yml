@@ -29,7 +29,7 @@
 language: cpp
 
 sudo: required
-dist: xenial
+dist: bionic
 
 script: .travis/script.sh
 
@@ -39,8 +39,6 @@ matrix:
       os: linux
       addons:
         apt:
-          sources:
-            - llvm-toolchain-xenial-6.0
           packages:
             - clang-format-6.0
     - env: BUILD_TARGET="nrf-check"

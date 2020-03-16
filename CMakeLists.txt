@@ -180,8 +180,3 @@ set(PORT_DIRS
     ./third_party/freertos-addons/port
     ./third_party/lwip/port
 )
-add_custom_target(pretty
-    find src include ${PORT_DIRS} \( -name "*.c" -o -name "*.cpp" -o -name "*.h" -o -name "*.hpp" \) -exec bash -c "echo Beautify '{}' && third_party/openthread/repo/script/clang-format.sh -i '{}'" \;
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    VERBATIM
-    )
