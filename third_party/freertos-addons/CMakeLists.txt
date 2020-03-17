@@ -28,7 +28,7 @@
 
 set(FREERTOS_Linux_PORT_DIR ${CMAKE_CURRENT_SOURCE_DIR}/repo/Linux/portable/GCC/Linux)
 
-if (${PLATFORM_NAME} STREQUAL linux)
+if (${OT_PLATFORM} STREQUAL simulation)
     add_library(freertos_portable_linux 
         ${FREERTOS_Linux_PORT_DIR}/port.c
         ${CMAKE_CURRENT_SOURCE_DIR}/port/hooks.c
@@ -46,12 +46,10 @@ if (${PLATFORM_NAME} STREQUAL linux)
             pthread
     )
 
-    if (${PLATFORM_NAME} STREQUAL linux)
-        add_library(freertos_portable INTERFACE)
+    add_library(freertos_portable INTERFACE)
 
-        target_link_libraries(freertos_portable
-            INTERFACE
-                freertos_portable_linux
-        )
-    endif()
+    target_link_libraries(freertos_portable
+        INTERFACE
+            freertos_portable_linux
+    )
 endif()

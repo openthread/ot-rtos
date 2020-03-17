@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2018, The OpenThread Authors.
+ *  Copyright (c) 2019, The OpenThread Authors.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -26,44 +26,20 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef LWIP_PORT_CC_H_
-#define LWIP_PORT_CC_H_
+#ifndef OTX_NETIF_H
+#define OTX_NETIF_H
 
-#define LWIP_TIMEVAL_PRIVATE 0
+#include "openthread/instance.h"
 
-#define PACK_STRUCT_FIELD(x) x
-#define PACK_STRUCT_STRUCT __attribute__((packed))
-#define PACK_STRUCT_BEGIN
-#define PACK_STRUCT_END
-
-#ifndef BYTE_ORDER
-#define BYTE_ORDER LITTLE_ENDIAN
+#ifdef __cplusplus
+extern "C" {
 #endif
 
-#include <stdio.h>
-#include <stdlib.h>
+void netifInit(void *aContext);
+void netifProcess(otInstance *aInstance);
 
-/* Plaform specific diagnostic output */
-#define LWIP_PLATFORM_DIAG(x) \
-    do                        \
-    {                         \
-        printf x;             \
-    } while (0)
-
-#define LWIP_PLATFORM_ASSERT(x)                                                               \
-    do                                                                                        \
-    {                                                                                         \
-        fprintf(stderr, "Assertion \"%s\" failed at line %d in %s\n", x, __LINE__, __FILE__); \
-        fflush(NULL);                                                                         \
-    } while (0)
-
-#ifdef OT_PLATFORM_simulation
-#define LWIP_ERRNO_STDINCLUDE 1
-#undef LWIP_PROVIDE_ERRNO
-#else
-#define LWIP_PROVIDE_ERRNO
+#ifdef __cplusplus
+}
 #endif
 
-#define LWIP_RAND() ((u32_t)rand())
-
-#endif // LWIP_PORT_CC_H_
+#endif // OTX_NETIF_H

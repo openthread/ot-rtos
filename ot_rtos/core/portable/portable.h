@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2018, The OpenThread Authors.
+ *  Copyright (c) 2019, The OpenThread Authors.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -26,44 +26,41 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef LWIP_PORT_CC_H_
-#define LWIP_PORT_CC_H_
+#ifndef OT_FREERTOS_PORTABLE_H_
+#define OT_FREERTOS_PORTABLE_H_
 
-#define LWIP_TIMEVAL_PRIVATE 0
+#if defined OT_PLATFORM_nrf52
 
-#define PACK_STRUCT_FIELD(x) x
-#define PACK_STRUCT_STRUCT __attribute__((packed))
-#define PACK_STRUCT_BEGIN
-#define PACK_STRUCT_END
+#include "core_cm4.h"
+#include "nordic_common.h"
 
-#ifndef BYTE_ORDER
-#define BYTE_ORDER LITTLE_ENDIAN
-#endif
-
-#include <stdio.h>
-#include <stdlib.h>
-
-/* Plaform specific diagnostic output */
-#define LWIP_PLATFORM_DIAG(x) \
-    do                        \
-    {                         \
-        printf x;             \
+#define OTR_PORT_ENABLE_SLEEP()            \
+    do                                     \
+    {                                      \
+        SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk; \
     } while (0)
 
-#define LWIP_PLATFORM_ASSERT(x)                                                               \
-    do                                                                                        \
-    {                                                                                         \
-        fprintf(stderr, "Assertion \"%s\" failed at line %d in %s\n", x, __LINE__, __FILE__); \
-        fflush(NULL);                                                                         \
+#define OTR_PORT_GET_IN_ISR(x)                              \
+    do                                                      \
+    {                                                       \
+        __asm volatile("mrs %0, ipsr" : "=r"(x)::"memory"); \
     } while (0)
 
-#ifdef OT_PLATFORM_simulation
-#define LWIP_ERRNO_STDINCLUDE 1
-#undef LWIP_PROVIDE_ERRNO
 #else
-#define LWIP_PROVIDE_ERRNO
+
+#define OTR_PORT_ENABLE_SLEEP() \
+    do                          \
+    {                           \
+    } while (0)
+
+#define OTR_PORT_GET_IN_ISR(x) \
+    do                         \
+    {                          \
+        x = 0;                 \
+    } while (0)
+
+#define UNUSED_VARIABLE(x) ((void)(x))
+
 #endif
 
-#define LWIP_RAND() ((u32_t)rand())
-
-#endif // LWIP_PORT_CC_H_
+#endif

@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2019, The OpenThread Authors.
+#  Copyright (c) 2020, The OpenThread Authors.
 #  All rights reserved.
 #
 #  Redistribution and use in source and binary forms, with or without
@@ -26,57 +26,31 @@
 #  POSSIBILITY OF SUCH DAMAGE.
 #
 
-cmake_minimum_required (VERSION 3.7)
+add_library(otr_net_utils STATIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/nat64_utils.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/time_ntp.cpp
+)
 
-project(openthread_freertos)
+target_include_directories(otr_net_utils
+    PUBLIC
+        ${OTR_SRC_ROOT}
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}
+)
 
-cmake_policy(SET CMP0079 NEW)
+target_compile_definitions(otr_net_utils
+    PRIVATE
+        ${OTR_DEFINITIONS}
+)
 
-if (NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Debug)
-endif()
+target_link_libraries(otr_net_utils
+    PUBLIC
+        otr_core
+)
 
-set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
-set(CMAKE_C_FLAGS_DEBUG "-g -O0")
-set(CMAKE_CXX_FLAGS_RELEASE "-Os")
-set(CMAKE_C_FLAGS_RELEASE "-Os")
-
-set(OTR_COMPILE_FLAGS
-   -Wall
-   -Wextra
-   -Wshadow
-   -Werror
-   $<$<COMPILE_LANGUAGE:CXX>:
-       -std=gnu++14
-       -fno-exceptions
-       -fno-rtti
-   >
+target_compile_options(otr_net_utils
+    PRIVATE
+        ${OTR_COMPILE_FLAGS}
 )
 
 
-set(OTR_DEFINITIONS
-   OT_PLATFORM_${OT_PLATFORM}=1
-)
-
-set(OTR_SRC_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
-
-add_subdirectory(third_party/freertos)
-add_subdirectory(third_party/freertos_portable)
-add_subdirectory(third_party/freertos-addons)
-add_subdirectory(third_party/openthread)
-add_subdirectory(third_party/jansson)
-add_subdirectory(third_party/libjwt)
-add_subdirectory(third_party/lwip)
-add_subdirectory(third_party/mbedtls)
-add_subdirectory(ot_rtos)
-
-set(PORT_DIRS 
-    ./third_party/freertos-addons/port
-    ./third_party/lwip/port
-)
-
-add_custom_target(pretty
-    find ot_rtos ${PORT_DIRS} \( -name "*.c" -o -name "*.cpp" -o -name "*.h" -o -name "*.hpp" \) -exec bash -c "echo Beautify '{}' && third_party/openthread/repo/script/clang-format.sh -i '{}'" \;
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    VERBATIM
-)

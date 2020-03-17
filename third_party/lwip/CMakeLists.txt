@@ -111,7 +111,7 @@ set(lwip_SRCS
     ${LWIP_PORT_DIR}/sys_arch.c
 )
 
-add_library(lwip ${lwip_SRCS})
+add_library(lwip STATIC ${lwip_SRCS})
 
 target_include_directories(lwip
     PUBLIC
@@ -124,17 +124,20 @@ target_include_directories(lwip
 
 target_compile_definitions(lwip
     PUBLIC
-        DEFAULT_ACCEPTMBOX_SIZE=10)
+        DEFAULT_ACCEPTMBOX_SIZE=10
+    PRIVATE
+        ${OTR_DEFINITIONS}
+)
 
 target_link_libraries(lwip
     PUBLIC
         freertos
-        platform_${PLATFORM_NAME}
+        openthread-${OT_PLATFORM}
     PRIVATE
-        otr_core_utils
         mbedcrypto
         mbedtls
         mbedx509
+        otr_entropy
 )
 
 target_compile_options(lwip

@@ -28,55 +28,61 @@
 
 cmake_minimum_required (VERSION 3.7)
 
-project(openthread_freertos)
+option(OTR_DEMO_101 "Enable nrf52 demo 101" OFF)
 
-cmake_policy(SET CMP0079 NEW)
+add_library(otr_test_app
+    ${CMAKE_CURRENT_SOURCE_DIR}/test/http.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/test/mqtt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/test/tcp_utils.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/test/test_tasks.cpp
+)
 
-if (NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Debug)
+target_include_directories(otr_test_app
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/test/
+)
+
+target_compile_definitions(otr_test_app
+    PRIVATE
+        ${OTR_DEFINITIONS}
+)
+
+target_link_libraries(otr_test_app
+    PUBLIC
+        otr_core
+        otr_net_utils
+        libjwt
+)
+
+add_custom_target(
+    client_cfg
+    COMMAND
+        ${CMAKE_CURRENT_SOURCE_DIR}/script/generate_cloudiot_cfg.sh
+        ${CLOUDIOT_DEVICE} ${CLOUDIOT_REGISTRY} ${CLOUDIOT_PROJECT}
+        ${CLOUDIOT_REGION} ${CLOUDIOT_PRIV_KEY}
+)
+
+add_dependencies(otr_test_app client_cfg)
+
+if (${OT_PLATFORM} STREQUAL nrf52 AND OTR_DEMO_101)
+    add_library(otr_demo_101_app
+        ${CMAKE_CURRENT_SOURCE_DIR}/demo_101/demo_101.cpp
+    )
+
+    target_include_directories(otr_demo_101_app
+        PRIVATE
+            ${CMAKE_CURRENT_SOURCE_DIR}/demo_101/
+    )
+
+    target_compile_definitions(otr_demo_101_app
+        PRIVATE
+            ${OTR_DEFINITIONS}
+    )
+
+    target_link_libraries(demo_101
+        PUBLIC
+            otr_core
+            otr_net_utils
+            libjwt
+    )
 endif()
-
-set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
-set(CMAKE_C_FLAGS_DEBUG "-g -O0")
-set(CMAKE_CXX_FLAGS_RELEASE "-Os")
-set(CMAKE_C_FLAGS_RELEASE "-Os")
-
-set(OTR_COMPILE_FLAGS
-   -Wall
-   -Wextra
-   -Wshadow
-   -Werror
-   $<$<COMPILE_LANGUAGE:CXX>:
-       -std=gnu++14
-       -fno-exceptions
-       -fno-rtti
-   >
-)
-
-
-set(OTR_DEFINITIONS
-   OT_PLATFORM_${OT_PLATFORM}=1
-)
-
-set(OTR_SRC_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
-
-add_subdirectory(third_party/freertos)
-add_subdirectory(third_party/freertos_portable)
-add_subdirectory(third_party/freertos-addons)
-add_subdirectory(third_party/openthread)
-add_subdirectory(third_party/jansson)
-add_subdirectory(third_party/libjwt)
-add_subdirectory(third_party/lwip)
-add_subdirectory(third_party/mbedtls)
-add_subdirectory(ot_rtos)
-
-set(PORT_DIRS 
-    ./third_party/freertos-addons/port
-    ./third_party/lwip/port
-)
-
-add_custom_target(pretty
-    find ot_rtos ${PORT_DIRS} \( -name "*.c" -o -name "*.cpp" -o -name "*.h" -o -name "*.hpp" \) -exec bash -c "echo Beautify '{}' && third_party/openthread/repo/script/clang-format.sh -i '{}'" \;
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    VERBATIM
-)

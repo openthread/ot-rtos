@@ -452,7 +452,7 @@
 
 #define LWIP_DEBUG 1
 
-#ifdef PLATFORM_linux
+#ifdef OT_PLATFORM_simulation
 #define LWIP_PROVIDE_ERRNO 0
 #define LWIP_ERRNO_STDINCLUDE 1
 #define IPV6_FRAG_COPYHEADER 1

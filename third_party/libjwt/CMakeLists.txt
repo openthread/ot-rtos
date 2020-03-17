@@ -38,7 +38,7 @@ set(LIBJWT_SRC_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/jwt-mbedtls.c
 )
 
-add_library(libjwt ${LIBJWT_SRC_FILES})
+add_library(libjwt STATIC ${LIBJWT_SRC_FILES})
 
 target_compile_options(libjwt PRIVATE
     -Wall
@@ -61,8 +61,7 @@ target_include_directories(libjwt
 
 target_link_libraries(libjwt
     PRIVATE
-        otr_core_utils
         jansson
         mbedtls
-        platform_${PLATFORM_NAME}
+        otr_entropy
 )

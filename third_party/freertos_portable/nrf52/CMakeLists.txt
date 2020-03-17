@@ -11,9 +11,8 @@ target_include_directories(freertos_portable_nrf52 PUBLIC
 
 target_link_libraries(freertos_portable_nrf52
     PUBLIC
-        platform_${PLATFORM_NAME}
+        openthread-${OT_PLATFORM}
         freertos_port_hdrs
-        openthread_config
 )
 
 target_compile_options(freertos_portable_nrf52

@@ -86,7 +86,7 @@
 
 #include <string.h>
 
-#include "utils/entropy_utils.h"
+#include "ot_rtos/platform/entropy/entropy_utils.h"
 
 #ifndef ALTCP_MBEDTLS_ENTROPY_PTR
 #define ALTCP_MBEDTLS_ENTROPY_PTR NULL

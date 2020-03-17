@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2018, The OpenThread Authors.
+ *  Copyright (c) 2019, The OpenThread Authors.
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -26,44 +26,36 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef LWIP_PORT_CC_H_
-#define LWIP_PORT_CC_H_
+#include "nat64_utils.h"
 
-#define LWIP_TIMEVAL_PRIVATE 0
+#include "lwip/netdb.h"
 
-#define PACK_STRUCT_FIELD(x) x
-#define PACK_STRUCT_STRUCT __attribute__((packed))
-#define PACK_STRUCT_BEGIN
-#define PACK_STRUCT_END
+static ip6_addr_t sNat64Prefix;
 
-#ifndef BYTE_ORDER
-#define BYTE_ORDER LITTLE_ENDIAN
-#endif
+void setNat64Prefix(const ip6_addr_t *aNat64Prefix)
+{
+    sNat64Prefix = *aNat64Prefix;
+}
 
-#include <stdio.h>
-#include <stdlib.h>
+ip6_addr_t getNat64Address(const ip4_addr_t *aIpv4Address)
+{
+    ip6_addr_t addr = sNat64Prefix;
+    addr.addr[3]    = aIpv4Address->addr;
+    addr.zone       = IP6_NO_ZONE;
+    return addr;
+}
 
-/* Plaform specific diagnostic output */
-#define LWIP_PLATFORM_DIAG(x) \
-    do                        \
-    {                         \
-        printf x;             \
-    } while (0)
+int dnsNat64Address(const char *aHostName, ip6_addr_t *aAddrOut)
+{
+    ip4_addr_t      v4Addr;
+    struct hostent *host = gethostbyname(aHostName);
+    int             ret  = -1;
+    if (host && host->h_addr_list && host->h_addrtype == AF_INET)
+    {
+        memcpy(&v4Addr.addr, host->h_addr_list[0], sizeof(v4Addr.addr));
+        *aAddrOut = getNat64Address(&v4Addr);
+        ret       = 0;
+    }
 
-#define LWIP_PLATFORM_ASSERT(x)                                                               \
-    do                                                                                        \
-    {                                                                                         \
-        fprintf(stderr, "Assertion \"%s\" failed at line %d in %s\n", x, __LINE__, __FILE__); \
-        fflush(NULL);                                                                         \
-    } while (0)
-
-#ifdef OT_PLATFORM_simulation
-#define LWIP_ERRNO_STDINCLUDE 1
-#undef LWIP_PROVIDE_ERRNO
-#else
-#define LWIP_PROVIDE_ERRNO
-#endif
-
-#define LWIP_RAND() ((u32_t)rand())
-
-#endif // LWIP_PORT_CC_H_
+    return ret;
+}

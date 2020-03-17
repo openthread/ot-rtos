@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2019, The OpenThread Authors.
+#  Copyright (c) 2020, The OpenThread Authors.
 #  All rights reserved.
 #
 #  Redistribution and use in source and binary forms, with or without
@@ -26,13 +26,53 @@
 #  POSSIBILITY OF SUCH DAMAGE.
 #
 
-if (${OT_PLATFORM} STREQUAL nrf52)
-    add_subdirectory(nrf52)
+add_executable(ot_cli_${OT_PLATFORM}
+    ${CMAKE_CURRENT_SOURCE_DIR}/main.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/io_redirect.c
+)
 
-    add_library(freertos_portable INTERFACE)
+target_include_directories(ot_cli_${OT_PLATFORM}
+    PUBLIC
+        ${OTR_SRC_ROOT}
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}
+)
 
-    target_link_libraries(freertos_portable
-        INTERFACE
-            freertos_portable_nrf52
+target_compile_definitions(ot_cli_${OT_PLATFORM}
+    PRIVATE
+        ${OTR_DEFINITIONS}
+)
+
+if (${OT_PLATFORM} STREQUAL nrf52 AND OTR_DEMO_101)
+    target_link_libraries(ot_cli_${OT_PLATFORM}
+    PRIVATE
+        otr_demo_101_app
+        openthread-cli-ftd
+    )
+else()
+    target_link_libraries(ot_cli_${OT_PLATFORM}
+    PRIVATE
+        otr_test_app
+        openthread-cli-ftd
     )
 endif()
+
+if (${OT_PLATFORM} STREQUAL nrf52)
+    target_compile_definitions(ot_cli_${OT_PLATFORM}
+        PUBLIC
+            __HEAP_SIZE=8192
+            __STACK_SIZE=8192
+    )
+
+    #special link script
+    set_target_properties(ot_cli_${OT_PLATFORM} PROPERTIES LINK_DEPENDS ${OTR_SRC_ROOT}/third_party/openthread/repo/examples/platforms/nrf528xx/nrf52840/nrf52840.ld)
+    set_target_properties(ot_cli_${OT_PLATFORM} PROPERTIES LINK_FLAGS "-T ${OTR_SRC_ROOT}/third_party/openthread/repo/examples/platforms/nrf528xx/nrf52840/nrf52840.ld -lc -lnosys -lm -lstdc++")
+
+    #build hex file
+    add_custom_command(OUTPUT ot_cli_${OT_PLATFORM}.hex
+        COMMAND arm-none-eabi-objcopy -O ihex ot_cli_${OT_PLATFORM} ot_cli_${OT_PLATFORM}.hex
+        DEPENDS ot_cli_${OT_PLATFORM}
+    )
+    add_custom_target(ot_cli_nrf52_hex ALL DEPENDS ot_cli_${OT_PLATFORM}.hex)
+endif()
+

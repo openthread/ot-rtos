@@ -23,7 +23,7 @@
 
 #include "config.h"
 #include "jwt-private.h"
-#include "utils/entropy_utils.h"
+#include "ot_rtos/platform/entropy/entropy_utils.h"
 
 #define SHA256_OUT_SIZE (32)
 #define SHA384_OUT_SIZE (48)

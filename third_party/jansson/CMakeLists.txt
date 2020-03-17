@@ -44,7 +44,7 @@ set(JANSSON_SRC_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/repo/src/value.c
 )
 
-add_library(jansson ${JANSSON_SRC_FILES})
+add_library(jansson STATIC ${JANSSON_SRC_FILES})
 
 target_compile_options(jansson
     PRIVATE

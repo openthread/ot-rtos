@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2019, The OpenThread Authors.
+#  Copyright (c) 2020, The OpenThread Authors.
 #  All rights reserved.
 #
 #  Redistribution and use in source and binary forms, with or without
@@ -26,57 +26,4 @@
 #  POSSIBILITY OF SUCH DAMAGE.
 #
 
-cmake_minimum_required (VERSION 3.7)
-
-project(openthread_freertos)
-
-cmake_policy(SET CMP0079 NEW)
-
-if (NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Debug)
-endif()
-
-set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
-set(CMAKE_C_FLAGS_DEBUG "-g -O0")
-set(CMAKE_CXX_FLAGS_RELEASE "-Os")
-set(CMAKE_C_FLAGS_RELEASE "-Os")
-
-set(OTR_COMPILE_FLAGS
-   -Wall
-   -Wextra
-   -Wshadow
-   -Werror
-   $<$<COMPILE_LANGUAGE:CXX>:
-       -std=gnu++14
-       -fno-exceptions
-       -fno-rtti
-   >
-)
-
-
-set(OTR_DEFINITIONS
-   OT_PLATFORM_${OT_PLATFORM}=1
-)
-
-set(OTR_SRC_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
-
-add_subdirectory(third_party/freertos)
-add_subdirectory(third_party/freertos_portable)
-add_subdirectory(third_party/freertos-addons)
-add_subdirectory(third_party/openthread)
-add_subdirectory(third_party/jansson)
-add_subdirectory(third_party/libjwt)
-add_subdirectory(third_party/lwip)
-add_subdirectory(third_party/mbedtls)
-add_subdirectory(ot_rtos)
-
-set(PORT_DIRS 
-    ./third_party/freertos-addons/port
-    ./third_party/lwip/port
-)
-
-add_custom_target(pretty
-    find ot_rtos ${PORT_DIRS} \( -name "*.c" -o -name "*.cpp" -o -name "*.h" -o -name "*.hpp" \) -exec bash -c "echo Beautify '{}' && third_party/openthread/repo/script/clang-format.sh -i '{}'" \;
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    VERBATIM
-)
+add_subdirectory(entropy)
