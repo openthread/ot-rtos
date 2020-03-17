@@ -66,9 +66,9 @@ public:
 
     ~GoogleCloudIotMqttClient(void);
 
-    static const size_t kTopicNameMaxLength = 50;
-    static const size_t kTopicDataMaxLength = 201;
-    static const uint16_t kMqttPort = 8883;
+    static const size_t   kTopicNameMaxLength = 50;
+    static const size_t   kTopicDataMaxLength = 201;
+    static const uint16_t kMqttPort           = 8883;
 
 private:
     static void MqttPubSubChanged(void *aArg, err_t aResult);

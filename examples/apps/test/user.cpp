@@ -38,7 +38,7 @@
 #include "google_cloud_iot/client_cfg.h"
 #include "google_cloud_iot/mqtt_client.hpp"
 
-TaskHandle_t                     gTestTask = NULL;
+TaskHandle_t                            gTestTask = NULL;
 static ot::app::GoogleCloudIotClientCfg sCloudIotCfg;
 
 static otError parseLong(char *argv, long *aValue)
@@ -68,12 +68,12 @@ static void ProcessTest(int argc, char *argv[])
         sCloudIotCfg.mAddress         = CLOUDIOT_SERVER_ADDRESS;
         sCloudIotCfg.mRootCertificate = CLOUDIOT_CERT;
         sCloudIotCfg.mAlgorithm       = JWT_ALG_RS256;
-        sCloudIotCfg.mClientId   = CLOUDIOT_CLIENT_ID;
-        sCloudIotCfg.mDeviceId   = CLOUDIOT_DEVICE_ID;
-        sCloudIotCfg.mRegistryId = CLOUDIOT_REGISTRY_ID;
-        sCloudIotCfg.mProjectId  = CLOUDIOT_PROJECT_ID;
-        sCloudIotCfg.mRegion     = CLOUDIOT_REGION;
-        sCloudIotCfg.mPrivKey    = CLOUDIOT_PRIV_KEY;
+        sCloudIotCfg.mClientId        = CLOUDIOT_CLIENT_ID;
+        sCloudIotCfg.mDeviceId        = CLOUDIOT_DEVICE_ID;
+        sCloudIotCfg.mRegistryId      = CLOUDIOT_REGISTRY_ID;
+        sCloudIotCfg.mProjectId       = CLOUDIOT_PROJECT_ID;
+        sCloudIotCfg.mRegion          = CLOUDIOT_REGION;
+        sCloudIotCfg.mPrivKey         = CLOUDIOT_PRIV_KEY;
 
         xTaskCreate(mqttTask, "mqtt", 3000, &sCloudIotCfg, 2, &gTestTask);
     }
