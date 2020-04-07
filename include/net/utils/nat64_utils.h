@@ -38,7 +38,9 @@ extern "C" {
 
 void setNat64Prefix(const ip6_addr_t *aNat64Prefix);
 
+#if LWIP_IPV4
 ip6_addr_t getNat64Address(const ip4_addr_t *aIpv4Address);
+#endif
 
 int dnsNat64Address(const char *aHostName, ip6_addr_t *aAddrOut);
 

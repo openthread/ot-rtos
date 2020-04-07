@@ -131,9 +131,11 @@ static err_t netifInit(struct netif *aNetif)
     aNetif->name[1]    = 't';
     aNetif->hwaddr_len = sizeof(otExtAddress);
     memset(aNetif->hwaddr, 0, sizeof(aNetif->hwaddr));
-    aNetif->mtu    = OPENTHREAD_CONFIG_IP6_MAX_DATAGRAM_LENGTH;
-    aNetif->flags  = NETIF_FLAG_BROADCAST;
+    aNetif->mtu   = OPENTHREAD_CONFIG_IP6_MAX_DATAGRAM_LENGTH;
+    aNetif->flags = NETIF_FLAG_BROADCAST;
+#if LWIP_IPV4
     aNetif->output = NULL;
+#endif
 #if LWIP_IPV6
     aNetif->output_ip6 = netifOutputIp6;
 #endif
@@ -218,11 +220,18 @@ exit:
 
 static void setupDns(void)
 {
+#if LWIP_IPV4
     ip_addr_t dnsServer;
 
     inet_pton(AF_INET6, "64:ff9b::808:808", &dnsServer.u_addr.ip6.addr);
     dnsServer.type            = IPADDR_TYPE_V6;
     dnsServer.u_addr.ip6.zone = IP6_NO_ZONE;
+#else
+    ip6_addr_t dnsServer;
+
+    inet_pton(AF_INET6, "64:ff9b::808:808", &dnsServer.addr);
+    dnsServer.zone = IP6_NO_ZONE;
+#endif
 
     dns_init();
     dns_setserver(0, &dnsServer);
@@ -378,7 +387,11 @@ void netifInit(void *aContext)
 
     memset(&sNetif, 0, sizeof(sNetif));
     // LOCK_TCPIP_CORE();
+#if LWIP_IPV4
     netif_add(&sNetif, NULL, NULL, NULL, instance, netifInit, tcpip_input);
+#else
+    netif_add(&sNetif, instance, netifInit, tcpip_input);
+#endif
     netif_set_link_up(&sNetif);
     netif_set_status_callback(&sNetif, HandleNetifStatus);
     // UNLOCK_TCPIP_CORE();
