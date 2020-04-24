@@ -1,16 +1,15 @@
-
 # OpenThread RTOS CLI
 
 OpenThread-sdk extends the OpenThread CLI interface with the following commands:
 
 ## Openthread-sdk extended command list
 
-* [test http](#test-http)
-* [test mqtt](#test-mqtt)
-* [tcp\_echo\_server](#tcp-echo-server-and-client)
-* [tcp\_connect](#tcp-echo-server-and-client)
-* [tcp\_disconnect](#tcp-echo-server-and-client)
-* [tcp\_send](#tcp-echo-server-and-client)
+- [test http](#test-http)
+- [test mqtt](#test-mqtt)
+- [tcp_echo_server](#tcp-echo-server-and-client)
+- [tcp_connect](#tcp-echo-server-and-client)
+- [tcp_disconnect](#tcp-echo-server-and-client)
+- [tcp_send](#tcp-echo-server-and-client)
 
 ## test http
 
@@ -36,6 +35,7 @@ You need to setup border router and nat64 server.
 Please read the [quick start guide](https://cloud.google.com/iot/docs/quickstart) for google cloud iot core first and save your private key, also select RS256 for authentication.
 
 Define cloud iot configs in cmake variables:
+
 ```bash
 cmake .. -DPLATFORM_NAME=linux \
     -DCLOUDIOT_DEVICE=sample_device \
@@ -61,6 +61,7 @@ test mqtt
 ## TCP echo server and client
 
 Commands:
+
 - `tcp_echo_server port` starts TCP echo server on given `port`.
 - `tcp_connect ipaddr port` connects to given TCP server.
 - `tcp_send size count` sends `count` packets with given `size` to connected TCP server. At the end it prints statistics.

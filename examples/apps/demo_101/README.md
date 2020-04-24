@@ -1,4 +1,3 @@
-
 # OpenThread RTOS Demo 101
 
 In demo 101, we provide a showcase of how to connect a device to Thread network and periodically visit a website via HTTP.
@@ -37,4 +36,3 @@ Connect to the serial port of NRF52840 (typically `/dev/ttyACM0`). Log will be d
 ### Run the demo
 
 Push button 1 on the NRF52840 dev kit and it will start the Thread join process. After joining the Thread network, the node will periodically curl `www.google.com` and output the http response to log. Push button 1 again will stop the demo.
-
