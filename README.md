@@ -40,8 +40,8 @@ mkdir build && cd build
 cmake .. -DCMAKE_TOOLCHAIN_FILE=../cmake/arm-none-eabi.cmake -DPLATFORM_NAME=nrf52
 make -j12
 ```
-This will build the CLI test application in `build/ot_cli_nrf52840.hex`. You can flash the binary with `nrfjprog`([Download](https://www.nordicsemi.com/Software-and-Tools/Development-Tools/nRF5-Command-Line-Tools)) and connecting to the nRF52840 DK serial port.
-This will also build the demo application in `build/ot_demo_101`. See the [Demo 101 README](examples/apps/demo_101/README.md) for a description of the demo application.
+
+This will build the CLI test application in `build/ot_cli_nrf52840.hex`. You can flash the binary with `nrfjprog`([Download](https://www.nordicsemi.com/Software-and-Tools/Development-Tools/nRF5-Command-Line-Tools)) and connecting to the nRF52840 DK serial port. This will also build the demo application in `build/ot_demo_101`. See the [Demo 101 README](examples/apps/demo_101/README.md) for a description of the demo application.
 
 # Contributing
 
@@ -61,9 +61,9 @@ Please only use the OpenThread name and marks when accurately referencing this s
 
 There are numerous avenues for OpenThread support:
 
-* Bugs and feature requests — [submit to the Issue Tracker](https://github.com/openthread/ot-rtos/issues)
-* Stack Overflow — [post questions using the `openthread` tag](http://stackoverflow.com/questions/tagged/openthread)
-* Google Groups — [discussion and announcements at openthread-users](https://groups.google.com/forum/#!forum/openthread-users)
+- Bugs and feature requests — [submit to the Issue Tracker](https://github.com/openthread/ot-rtos/issues)
+- Stack Overflow — [post questions using the `openthread` tag](http://stackoverflow.com/questions/tagged/openthread)
+- Google Groups — [discussion and announcements at openthread-users](https://groups.google.com/forum/#!forum/openthread-users)
 
 The openthread-users Google Group is the recommended place for users to discuss OpenThread and interact directly with the OpenThread team.
 
