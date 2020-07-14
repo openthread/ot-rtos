@@ -302,7 +302,7 @@ static void processReceive(otMessage *aMessage, void *aContext)
 
     assert(sNetif.state == aInstance);
 
-    buffer = pbuf_alloc(PBUF_RAW, length, PBUF_POOL);
+    buffer = pbuf_alloc(PBUF_LINK, length, PBUF_POOL);
 
     VerifyOrExit(buffer != NULL, error = OT_ERROR_NO_BUFS);
 
@@ -360,14 +360,11 @@ static void processTransmit(otInstance *aInstance)
     }
 
     // Notify if more
-    if (sHeadOutput != NULL)
-    {
-        otrTaskNotifyGive();
-    }
-    else
+    if (sHeadOutput == NULL)
     {
         sLastOutput = NULL;
     }
+    otrTaskNotifyGive();
 
 exit:
     if (error != OT_ERROR_NONE)
