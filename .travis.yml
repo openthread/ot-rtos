@@ -40,7 +40,7 @@ matrix:
       addons:
         apt:
           packages:
-            - clang-format-6.0
+            - clang-format-10
     - env: BUILD_TARGET="nrf-check"
       os: linux
     - env: BUILD_TARGET="linux-check"
