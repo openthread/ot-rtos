@@ -27,33 +27,37 @@
 #  POSSIBILITY OF SUCH DAMAGE.
 #
 
-CLANG_FORMAT_VERSION="clang-format version 6.0"
+CLANG_FORMAT_VERSION="clang-format version 10.0"
 
-die() {
+die()
+{
     echo " *** ERROR: $*"
     exit 1
 }
 
-if command -v clang-format-6.0 > /dev/null; then
-    alias clang-format=clang-format-6.0
-elif command -v clang-format > /dev/null; then
+# Aliases are not expanded when the shell is not interactive, unless the
+# expand_aliases shell option is set using shopt.
+shopt -s expand_aliases
+
+if command -v clang-format-10 >/dev/null; then
+    alias clang-format=clang-format-10
+elif command -v clang-format >/dev/null; then
     case "$(clang-format --version)" in
-        "$CLANG_FORMAT_VERSION"*)
-            ;;
+        "$CLANG_FORMAT_VERSION"*) ;;
+
         *)
-            die "$(clang-format --version); clang-format 6.0 required"
+            die "$(clang-format --version); clang-format 10.0 required"
             ;;
     esac
 else
-    die "clang-format 6.0 required"
+    die "clang-format 10.0 required"
 fi
 
 clang-format "$@" || die
 
 # ensure EOF newline
 REPLACE=no
-for arg
-do
+for arg; do
     case $arg in
         -i)
             REPLACE=yes
@@ -64,7 +68,7 @@ done
 file=$arg
 
 [ $REPLACE != yes ] || {
-    [ -n "$(tail -c1 "$file")" ] && echo >> "$file"
+    [ -n "$(tail -c1 "$file")" ] && echo >>"$file"
 }
 
 exit 0
