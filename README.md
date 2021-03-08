@@ -1,7 +1,7 @@
 [![Build Status][ot-rtos-travis-svg]][ot-rtos-travis]
 
 [ot-rtos-travis]: https://travis-ci.org/openthread/ot-rtos
-[ot-rtos-travis-svg]: https://travis-ci.org/openthread/ot-rtos.svg?branch=master
+[ot-rtos-travis-svg]: https://travis-ci.org/openthread/ot-rtos.svg?branch=main
 
 ---
 
@@ -45,15 +45,15 @@ This will build the CLI test application in `build/ot_cli_nrf52840.hex`. You can
 
 # Contributing
 
-We would love for you to contribute to OpenThread RTOS and help make it even better than it is today! See our [Contributing Guidelines](https://github.com/openthread/ot-rtos/blob/master/CONTRIBUTING.md) for more information.
+We would love for you to contribute to OpenThread RTOS and help make it even better than it is today! See our [Contributing Guidelines](https://github.com/openthread/ot-rtos/blob/main/CONTRIBUTING.md) for more information.
 
-Contributors are required to abide by our [Code of Conduct](https://github.com/openthread/ot-rtos/blob/master/CODE_OF_CONDUCT.md) and [Coding Conventions and Style Guide](https://github.com/openthread/ot-rtos/blob/master/STYLE_GUIDE.md).
+Contributors are required to abide by our [Code of Conduct](https://github.com/openthread/ot-rtos/blob/main/CODE_OF_CONDUCT.md) and [Coding Conventions and Style Guide](https://github.com/openthread/ot-rtos/blob/main/STYLE_GUIDE.md).
 
 We follow the philosophy of [Scripts to Rule Them All](https://github.com/github/scripts-to-rule-them-all).
 
 # License
 
-OpenThread RTOS is released under the [BSD 3-Clause license](https://github.com/openthread/ot-rtos/blob/master/LICENSE). See the [`LICENSE`](https://github.com/openthread/ot-rtos/blob/master/LICENSE) file for more information.
+OpenThread RTOS is released under the [BSD 3-Clause license](https://github.com/openthread/ot-rtos/blob/main/LICENSE). See the [`LICENSE`](https://github.com/openthread/ot-rtos/blob/main/LICENSE) file for more information.
 
 Please only use the OpenThread name and marks when accurately referencing this software distribution. Do not use the marks in a way that suggests you are endorsed by or otherwise affiliated with Nest, Google, or The Thread Group.
 
