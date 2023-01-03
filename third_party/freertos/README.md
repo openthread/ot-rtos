@@ -2,7 +2,7 @@
 
 ## URL
 
-https://sourceforge.net/projects/freertos/files/FreeRTOS/V10.1.1/FreeRTOSv10.1.1.zip
+https://github.com/FreeRTOS/FreeRTOS-Kernel/tree/V10.1.1
 
 ## Version
 
