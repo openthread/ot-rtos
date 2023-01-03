@@ -16,3 +16,6 @@
 [submodule "third_party/freertos-addons/repo"]
 	path = third_party/freertos-addons/repo
 	url = https://github.com/michaelbecker/freertos-addons.git
+[submodule "third_party/freertos/repo"]
+	path = third_party/freertos/repo
+	url = https://github.com/FreeRTOS/FreeRTOS-Kernel.git
